@@ -1,0 +1,2074 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>2BB/2KB H4 Procenten</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,500;1,600;1,700&display=swap">
+<style>
+:root{
+  --roze:#E924D5; --paars:#5E0696; --cyaan:#45EDFF;
+  --bg:#FBF7FE; --vlak:#FFFFFF; --lijn:#E6D8F2; --tekst:#2A0A46; --zacht:#6B5A80;
+  --goed:#16965A; --fout:#E21E2D; --roze-licht:#FCE6FA; --paars-licht:#F1E6FA; --cyaan-licht:#DDFBFF;
+  --font:'Montserrat', 'Segoe UI', Arial, sans-serif;
+}
+*{box-sizing:border-box}
+.app>*{min-width:0}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--tekst);font-family:var(--font);font-size:10pt;line-height:1.5}
+button,input,select{font-family:inherit;font-size:inherit}
+i,.var{font-style:italic;font-weight:600}
+.app{display:grid;grid-template-rows:auto auto 1fr auto;height:100vh;height:100dvh}
+/* ---------- kop ---------- */
+header{background:var(--paars);color:#fff;padding:10px max(16px,env(safe-area-inset-left)) 10px max(16px,env(safe-area-inset-right));display:flex;gap:14px;align-items:center;flex-wrap:wrap;border-bottom:5px solid var(--roze)}
+header h1{font-size:18px;margin:0;font-weight:800;letter-spacing:.2px}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tab{background:rgba(255,255,255,.12);color:#fff;border:0;border-radius:20px;padding:6px 14px;font-weight:600;font-size:14px;cursor:pointer}
+.tab.actief{background:var(--cyaan);color:var(--paars)}
+.kop-rechts{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:14px}
+.kop-rechts .naam{opacity:.85}
+.knop-klein{background:var(--roze);color:#fff;border:0;border-radius:20px;padding:6px 14px;font-weight:700;cursor:pointer;font-size:14px}
+/* ---------- strook met onderdelen ---------- */
+.strook{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;background:var(--vlak);border-bottom:1px solid var(--lijn)}
+.stip{flex:0 0 auto;min-width:44px;height:32px;border-radius:16px;border:2px solid var(--lijn);background:var(--vlak);color:var(--tekst);font-weight:700;font-size:13px;cursor:pointer;padding:0 8px}
+.stip.theorie{border-color:var(--cyaan);background:var(--cyaan-licht)}
+.stip.goed2{background:var(--goed);border-color:var(--goed);color:#fff}
+.stip.goed1{background:#7cc9a3;border-color:#7cc9a3;color:#fff}
+.stip.goed0{background:#f3b6bb;border-color:#f3b6bb}
+.stip.bezig{border-color:var(--roze)}
+.stip.ingeleverd{background:var(--paars-licht);border-color:var(--paars);color:var(--paars)}
+.tab.toets{background:var(--roze)}.tab.toets.actief{background:var(--cyaan);color:var(--paars)}
+.toetsregel{display:flex;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px solid var(--lijn)}
+.toetsregel .tk{font-weight:800;width:1.4em}.toetsregel .tk.g{color:var(--goed)}.toetsregel .tk.f{color:var(--fout)}
+.toets-let{background:var(--roze-licht);border-radius:12px;padding:8px 12px;font-weight:600;color:var(--paars);margin:6px 0 10px}
+.stip.huidig{outline:3px solid var(--paars);outline-offset:1px}
+/* ---------- hoofdvlak ---------- */
+main{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);min-height:0}
+.links,.rechts{min-height:0;overflow:auto;padding:22px max(16px,env(safe-area-inset-left)) 22px 24px}
+.links{background:var(--vlak);border-right:1px solid var(--lijn);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.rechts{padding-right:max(24px,env(safe-area-inset-right))}
+.lees-balk{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:4px 0 10px}
+.lees{border:2px solid var(--paars);background:#fff;color:var(--paars);border-radius:22px;padding:7px 16px;font-weight:700;cursor:pointer;font-size:15px}
+.lees.bezig{background:var(--paars);color:#fff}
+.lees-mini{border:0;background:transparent;cursor:pointer;font-size:18px;padding:0 4px;vertical-align:middle}
+.tempo{border:0;background:var(--paars-licht);color:var(--paars);border-radius:18px;padding:6px 12px;font-weight:600;cursor:pointer;font-size:13px}
+.leest{background:var(--cyaan-licht);border-radius:6px;box-shadow:0 0 0 4px var(--cyaan-licht)}
+.label-domein{display:inline-block;font-size:12px;font-weight:600;color:var(--paars);background:var(--paars-licht);border-radius:12px;padding:3px 10px;margin-bottom:10px}
+.opdr-nr{display:flex;align-items:baseline;gap:12px;margin:0 0 8px}
+.opdr-nr b{font-size:34px;font-weight:800;color:var(--roze);line-height:1}
+.opdr-nr span{font-size:13pt;font-weight:700;color:var(--paars)}
+.zin{display:block;margin-bottom:2px}
+.formuleregel{font-size:12pt;font-weight:600;color:var(--paars);margin:6px 0}
+.blok{margin-bottom:18px}
+.vraag{font-weight:600;color:var(--paars)}
+.witregel{height:18px}
+/* invoer */
+.antw-rij{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:12px 0}
+input.inv{border:2px solid var(--lijn);border-radius:10px;padding:10px 12px;min-width:0;width:200px;background:#fff;color:var(--tekst)}
+input.inv:focus{outline:none;border-color:var(--roze);box-shadow:0 0 0 3px var(--roze-licht)}
+input.inv.breed{width:min(100%,360px)}
+input.inv.goed{border-color:var(--goed);background:#eaf8f1}
+input.inv.fout{border-color:var(--fout);background:#fdeced}
+.knoppen{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.knop{border:0;border-radius:24px;padding:11px 22px;font-weight:700;cursor:pointer}
+.knop:focus-visible,.tab:focus-visible,.stip:focus-visible,.optie:focus-visible{outline:3px solid var(--cyaan);outline-offset:2px}
+.knop.hoofd{background:var(--roze);color:#fff}
+.knop.paars{background:var(--paars);color:#fff}
+.knop.licht{background:var(--paars-licht);color:var(--paars)}
+.knop:disabled{opacity:.45;cursor:default}
+.feedback{margin-top:14px;padding:12px 16px;border-radius:12px;font-weight:600;display:none}
+.feedback.goed{display:block;background:#eaf8f1;color:var(--goed)}
+.feedback.fout{display:block;background:#fdeced;color:var(--fout)}
+.feedback.info{display:block;background:var(--cyaan-licht);color:var(--paars)}
+.hintvak{margin-top:12px;padding:12px 16px;border-radius:12px;background:var(--roze-licht);color:var(--tekst);display:none}
+.hintvak.open{display:block}
+.hintvak b{color:var(--roze)}
+.pogingen{font-size:13px;color:var(--zacht);margin-top:10px}
+/* meerkeuze */
+.opties{display:grid;gap:10px;margin:12px 0}
+.optie{text-align:left;border:2px solid var(--lijn);background:#fff;border-radius:12px;padding:11px 14px;cursor:pointer;color:var(--tekst)}
+.optie.gekozen{border-color:var(--roze);background:var(--roze-licht)}
+.optie.goed{border-color:var(--goed);background:#eaf8f1}
+.optie.fout{border-color:var(--fout);background:#fdeced}
+/* tabellen: altijd helemaal zichtbaar, geen schuifbalk */
+.tabel-wrap{max-width:100%;overflow:visible}
+table.wt{border-collapse:collapse;margin:8px 0;font-variant-numeric:tabular-nums;width:100%;max-width:640px;table-layout:fixed}
+table.wt th,table.wt td{padding:6px 3px;text-align:center;min-width:0}
+table.wt th{font-weight:600}
+table.wt tr:first-child>*{border-bottom:2px solid var(--paars)}
+table.wt th:first-child,table.wt td:first-child{border-right:2px solid var(--paars);text-align:left;padding-right:8px;width:7.5em;white-space:normal;line-height:1.25}
+table.wt td+td,table.wt th+th{border-left:1px solid var(--paars)}
+table.wt input{width:100%;max-width:64px;min-width:0;text-align:center;border:2px solid var(--lijn);border-radius:8px;padding:6px 1px}
+table.wt input.goed{border-color:var(--goed);background:#eaf8f1}
+table.wt input.fout{border-color:var(--fout);background:#fdeced}
+table.wt.kort th:first-child,table.wt.kort td:first-child{width:3em}
+@media (max-width:520px){table.wt{font-size:14px} table.wt.kort th:first-child,table.wt.kort td:first-child{width:2.2em} table.wt th:first-child,table.wt td:first-child{width:5.2em;padding-right:4px} table.wt input{font-size:14px;padding:5px 0;border-radius:6px}}
+.bron{background:var(--bg);border:2px solid var(--lijn);border-radius:14px;padding:10px 12px;margin:10px 0}
+.bron-kop{font-weight:700;color:var(--roze);font-size:14px;margin-bottom:2px}
+.bron-tabel td{padding:3px 2px}
+.zet-uit-tabel{width:100%;max-width:64px;border:2px solid var(--lijn);background:#fff;border-radius:8px;padding:5px 0;font-weight:700;color:var(--tekst);cursor:pointer;font-family:inherit;font-size:inherit}
+.zet-uit-tabel:hover{border-color:var(--roze)}
+.zet-uit-tabel.gezet{background:var(--paars);border-color:var(--paars);color:#fff}
+td.leeg{color:var(--zacht)}
+.bron-let{font-size:13px;color:var(--fout);margin-top:4px}
+.knop-tekst{border:0;background:none;color:var(--paars);font-weight:700;text-decoration:underline;cursor:pointer;font-family:inherit;font-size:inherit;padding:0}
+.gegeven{font-weight:700;color:var(--paars)}
+/* stappen */
+.stappen{display:grid;gap:10px;margin:12px 0}
+.stap{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.stap .lab{min-width:170px;font-weight:600}
+.stap input{width:120px}
+.formulestap{font-size:12pt;font-weight:600;color:var(--paars);gap:6px}
+.stap.start{font-size:12pt;font-weight:600;color:var(--paars);margin-top:8px}
+input.inv.vak{width:68px;text-align:center;font-size:10pt;padding:6px 4px}
+.stap select{border:2px solid var(--lijn);border-radius:10px;padding:9px 10px;background:#fff}
+/* visueel links */
+.kaart{background:var(--bg);border:2px solid var(--lijn);border-radius:18px;padding:22px 26px;max-width:100%}
+.kaart.formule{font-size:14pt;font-weight:600;color:var(--paars);text-align:center}
+.kaart .kl{font-size:14px;font-weight:700;color:var(--roze);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px}
+.formulelijst{display:grid;gap:6px;font-size:13pt;color:var(--paars);font-weight:600}
+.formulelijst .nr{color:var(--roze);font-weight:800;margin-right:10px}
+svg.graf{width:100%;max-width:560px;height:auto;touch-action:manipulation;user-select:none}
+main.groot{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+main.groot .links{padding:12px 16px;gap:6px;justify-content:center}
+main.groot svg.graf{max-width:900px;max-height:calc(100vh - 200px);max-height:calc(100dvh - 200px)}
+main.groot .links:has(.bron-boven) svg.graf{max-height:calc(100vh - 290px);max-height:calc(100dvh - 290px)}
+.bron-boven{width:100%;max-width:640px}
+.bron-boven .bron{margin:0;padding:6px 10px}
+.bron-boven .bron-kop{font-size:13px}
+.bron-boven table.wt{font-size:14px;margin:2px 0}
+.bron-boven table.wt th,.bron-boven table.wt td{padding:3px 2px}
+.links .graf-uitleg{font-size:13px}
+main.groot.werk{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+main.groot.werk .links{justify-content:flex-start}
+main.groot.werk svg.graf{flex:none;max-width:1500px;max-height:calc(100vh - 140px);max-height:calc(100dvh - 140px)}
+main.groot.werk .links:has(.bron-boven) svg.graf{max-height:calc(100vh - 140px);max-height:calc(100dvh - 140px)}
+@media (max-width:860px){main.groot.werk{grid-template-columns:1fr}main.groot.werk svg.graf{max-height:none}}
+@media (max-width:860px){main.groot{grid-template-columns:1fr}main.groot svg.graf{max-height:none}}
+svg.graf .klik{cursor:crosshair}
+.as-wrap{position:relative;aspect-ratio:560/440;width:min(100%,640px,calc((100vh - 230px) * 560 / 440));width:min(100%,640px,calc((100dvh - 230px) * 560 / 440));container-type:inline-size;flex:none}
+.as-wrap svg.graf{display:block;width:100%;height:100%;max-width:none!important;max-height:none!important}
+input.asvak{position:absolute;width:9.5%;height:6.2%;min-height:0;padding:0 1px;font-size:2.7cqw;font-weight:600;text-align:center;border:2px solid var(--roze);border-radius:6px;background:#fff;color:var(--tekst);font-family:inherit}
+input.asvak:focus{outline:none;box-shadow:0 0 0 3px var(--roze-licht)}
+input.asvak.goed{border-color:var(--goed);background:#eaf8f1} input.asvak.fout{border-color:var(--fout);background:#fdeced}
+@media (max-width:860px){.as-wrap{width:100%}}
+#puntMelding{min-height:2.9em;display:flex;align-items:center;justify-content:center}
+.graf-knoppen{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.knop.gum{display:inline-flex;align-items:center;gap:6px}
+.knop.gum[aria-pressed="true"]{background:var(--roze);border-color:var(--roze);color:#fff}
+.knop.gum[aria-pressed="true"] svg path.vul{fill:#fff}
+svg.graf.gum-aan{cursor:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24'%3E%3Cpath d='M16.2 3.6a2 2 0 0 1 2.8 0l3.4 3.4a2 2 0 0 1 0 2.8L12 20.2H7.4L2.6 15.4a2 2 0 0 1 0-2.8z' fill='%23E924D5' stroke='%235E0696' stroke-width='1.2'/%3E%3C/svg%3E") 4 22,pointer}
+.graf-uitleg{font-size:14px;color:var(--zacht);text-align:center;max-width:520px}
+video{width:100%;max-width:820px;border-radius:14px;background:#000;box-shadow:0 8px 30px rgba(94,6,150,.18)}
+.theorie-tekst{background:var(--cyaan-licht);border-radius:16px;padding:18px 20px;margin:12px 0}
+.theorie-tekst b{color:var(--paars)}
+/* voet */
+footer{display:flex;gap:10px;align-items:center;padding:10px max(16px,env(safe-area-inset-left)) 10px max(16px,env(safe-area-inset-right));background:var(--vlak);border-top:1px solid var(--lijn)}
+footer .spacer{flex:1}
+.voortgang{font-size:14px;color:var(--zacht);font-weight:600}
+/* overlay */
+.overlay{position:fixed;inset:0;background:rgba(42,10,70,.55);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.overlay[hidden]{display:none!important}
+.ov-doos{background:#fff;border-radius:20px;max-width:760px;width:100%;max-height:90vh;overflow:auto;padding:26px 28px;border-top:8px solid var(--cyaan)}
+.ov-doos h2{margin:0 0 6px;color:var(--paars)}
+.ov-stap{opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s;padding:10px 14px;border-radius:12px;background:var(--bg);margin:8px 0;font-size:20px;font-weight:600}
+.ov-stap.zichtbaar{opacity:1;transform:none}
+.ov-stap .nr{display:inline-block;width:28px;height:28px;border-radius:50%;background:var(--roze);color:#fff;text-align:center;line-height:28px;font-size:14px;margin-right:10px}
+/* start en eind */
+.scherm{min-height:0;overflow:auto;width:100%;max-width:860px;margin:0 auto;padding:30px max(16px,env(safe-area-inset-left)) 40px max(16px,env(safe-area-inset-right))}
+.scherm h2{color:var(--paars);font-size:30px;margin:0 0 8px}
+.cijfer{font-size:64px;font-weight:800;color:var(--roze);line-height:1}
+.tegels{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:18px 0}
+.tegel{background:#fff;border:2px solid var(--lijn);border-radius:16px;padding:14px 16px}
+.tegel .k{font-size:13px;color:var(--zacht);font-weight:600}
+.tegel .w{font-size:26px;font-weight:800;color:var(--paars)}
+.pil{display:inline-block;padding:3px 12px;border-radius:12px;font-weight:700;font-size:14px}
+.pil.laag{background:#eaf8f1;color:var(--goed)} .pil.gemiddeld{background:#fff4d6;color:#9a6a00} .pil.hoog{background:#fdeced;color:var(--fout)}
+.analyse{background:#fff;border:2px solid var(--lijn);border-radius:16px;padding:16px 18px;margin:14px 0}
+.analyse li{margin:4px 0}
+pre.export{white-space:pre-wrap;background:var(--paars-licht);border-radius:12px;padding:14px;font-size:14px;max-height:280px;overflow:auto}
+.status{font-size:14px;font-weight:600;margin-top:8px}
+.code{font-family:'Courier New',monospace;font-size:20px;letter-spacing:2px;color:var(--roze)}
+.code-groot{font-family:'Courier New',monospace;font-size:44px;font-weight:700;letter-spacing:6px;color:var(--paars);background:var(--cyaan-licht);border-radius:14px;text-align:center;padding:16px;margin:12px 0}
+.startkeuze{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.startkeuze[hidden]{display:none!important}
+@media (max-width:860px){
+  main{grid-template-columns:1fr;grid-template-rows:auto auto}
+  .app{height:auto;min-height:100vh}
+  .links,.rechts{overflow:visible;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right))}
+  .links{border-right:0;border-bottom:1px solid var(--lijn)}
+  .stap .lab{min-width:0}
+}
+/* rekenmachine (examenmodel) */
+.rm{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(76px + env(safe-area-inset-bottom));width:330px;max-width:calc(100vw - 24px);max-height:calc(100vh - 20px);overflow:auto;background:#555;border:1px solid #333;border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.35);z-index:40;touch-action:none;font-family:Arial,Helvetica,sans-serif}
+.rm[hidden]{display:none!important}
+@media (min-width:861px){.rm{right:auto;left:max(16px,env(safe-area-inset-left))}}
+.rm-kop{display:flex;align-items:center;gap:10px;cursor:move;background:#fff;border-bottom:3px solid var(--paars);padding:8px 12px;border-radius:14px 14px 0 0;font-weight:700;color:var(--paars);font-size:20px;user-select:none;font-family:var(--font)}
+.rm-kop .pijlknop{margin-left:0;border:0;width:auto;height:auto;font-size:14px;padding:2px 6px}
+.rm.ingeklapt .rm-lijf{display:none}
+.rm-kop button{margin-left:auto;border:2px solid var(--paars);background:#fff;color:var(--paars);border-radius:4px;width:30px;height:30px;font-weight:800;font-size:16px;cursor:pointer;line-height:1}
+.rm-lijf{padding:10px 12px 14px}
+.rm-lcd{background:#e9e985;border:3px solid #333;border-radius:10px;height:112px;padding:6px 10px;display:flex;flex-direction:column;justify-content:space-between;color:#111;font-family:'Courier New',monospace;box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
+.rm-ind{display:flex;gap:10px;font-size:11px;font-weight:700;min-height:13px;font-family:Arial,sans-serif}
+.rm-in{font-size:19px;white-space:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;direction:ltr;cursor:text;min-height:26px;padding:2px 0}
+.rm-in::-webkit-scrollbar{display:none}
+.rm-in .tk{padding:0 0.5px}
+.rm-in .tk:hover{background:rgba(0,0,0,.08);border-radius:3px}
+.rm-uit.oud{opacity:.35}
+.rm-tip{font-size:11px;color:#ddd;margin-top:5px;font-family:var(--font)}
+.rm-in .caret{display:inline-block;width:2px;height:20px;background:#111;vertical-align:middle;animation:knipper 1s steps(1) infinite}
+@keyframes knipper{50%{opacity:0}}
+.rm-uit{font-size:26px;font-weight:700;text-align:right;white-space:nowrap;overflow:hidden;display:flex;justify-content:flex-end;align-items:center;min-height:36px}
+.breuk{display:inline-flex;flex-direction:column;align-items:center;font-size:18px;line-height:1.05;vertical-align:middle;margin:0 2px}
+.breuk span:first-child{border-bottom:2px solid #111;padding:0 3px}
+.rm-in sup{font-size:12px}
+.rm-modus{display:flex;gap:18px;margin:8px 2px 6px;color:#fff;font-weight:700;font-size:16px}
+.rm-modus label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.rm-modus input{width:22px;height:22px;accent-color:#1e6cff;margin:0}
+.rm-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px 6px}
+.rm-lbl{font-size:10px;color:#f0a830;text-align:center;align-self:end;min-height:12px;font-weight:700}
+.rm-grid button{border:0;border-radius:4px;padding:8px 0;font-size:17px;font-weight:700;cursor:pointer;background:#ddd;color:#111;box-shadow:inset 0 -3px 0 rgba(0,0,0,.25);font-family:'Times New Roman',serif}
+.rm-grid button:active{transform:translateY(1px);box-shadow:none}
+.rm-grid button.cijfer{background:#2a2a2a;color:#fff;font-size:24px;padding:6px 0;font-family:Arial,sans-serif}
+.rm-grid button.rood{background:#c0201e;color:#fff;font-family:Arial,sans-serif}
+.rm-grid button.blauw{background:#2f7dc0;color:#fff;font-size:24px}
+.rm-grid button.ans{background:#8a8a8a;color:#222;font-family:Arial,sans-serif}
+.rm-grid button.inv{background:#e39a12;color:#111;font-family:Arial,sans-serif}
+.rm-grid button.inv.aan{background:#ffcf4a;outline:3px solid #fff}
+.rm-grid button.sym{font-family:Arial,sans-serif}
+.rm-tussen{grid-column:1/-1;height:6px}
+@media (max-width:520px),(max-height:820px){.rm{width:280px}.rm-kop{font-size:16px;padding:6px 10px}.rm-lijf{padding:8px 10px 10px}.rm-lcd{height:88px}.rm-in{font-size:16px}.rm-uit{font-size:21px;min-height:28px}.rm-modus{font-size:13px;margin:5px 2px 3px}.rm-modus input{width:16px;height:16px}.rm-grid{gap:5px 5px}.rm-grid button{padding:5px 0;font-size:14px}.rm-grid button.cijfer,.rm-grid button.blauw{font-size:19px;padding:4px 0}.rm-lbl{font-size:9px;min-height:10px}}
+.rm-grid button.kopieer{grid-column:1/-1;background:#fff;color:var(--paars);font-family:var(--font);font-size:15px;padding:9px 0;margin-top:4px}
+.rm-melding{color:#fff;font-size:13px;min-height:18px;margin-top:6px;font-family:var(--font)}
+.berekeningen{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.berekening{font-family:'Courier New',monospace;font-size:14px;background:#fff;border:2px solid var(--lijn);border-radius:6px;padding:3px 8px}
+.rm{cursor:move}.rm button,.rm input,.rm label,.rm-lcd{cursor:pointer}.rm-lcd{cursor:text}
+.knop-klein.rm-knop{background:var(--cyaan);color:var(--paars)}
+@media (prefers-reduced-motion:reduce){.ov-stap{transition:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<div class="rm" id="rm" hidden role="dialog" aria-label="Rekenmachine">
+  <div class="rm-kop" id="rmKop"><button class="pijlknop" id="rmKlap" aria-label="Rekenmachine inklappen" aria-expanded="true">▼</button>Rekenmachine<button id="rmSluit" aria-label="Rekenmachine sluiten">✕</button></div>
+  <div class="rm-lijf">
+    <div class="rm-lcd" id="rmLcd" tabindex="0" aria-label="Scherm van de rekenmachine">
+      <div class="rm-ind"><span id="rmIndInv"></span><span>D</span><span id="rmIndModus">Math</span></div>
+      <div class="rm-in" id="rmIn"></div>
+      <div class="rm-uit" id="rmUit" aria-live="polite"></div>
+    </div>
+    <div class="rm-tip">Getal veranderen? Tik in de som of gebruik ◀ ▶ en DEL. Druk daarna op =.</div>
+    <div class="rm-modus" role="radiogroup" aria-label="Weergave">
+      <label><input type="radio" name="rmModus" value="math" checked>Mathematisch</label>
+      <label><input type="radio" name="rmModus" value="lin">Lineair</label>
+    </div>
+    <div class="rm-grid" id="rmToetsen">
+      <span class="rm-lbl">sin⁻¹</span><span class="rm-lbl">cos⁻¹</span><span class="rm-lbl">tan⁻¹</span><span class="rm-lbl"></span><span class="rm-lbl"></span>
+      <button data-t="sin">sin</button><button data-t="cos">cos</button><button data-t="tan">tan</button><button data-t="breuk" aria-label="breuk">▭<br style="line-height:0">▭</button><button data-t="e10" aria-label="keer tien tot de macht"><i>×10<sup>y</sup></i></button>
+      <button data-t="wortel" aria-label="wortel">√▢</button><button data-t="kw" aria-label="kwadraat"><i>x</i>²</button><button data-t="macht" aria-label="macht"><i>x</i><sup>▢</sup></button><button data-t="inv1" aria-label="één gedeeld door"><i>x</i>⁻¹</button><button data-t="pi" aria-label="pi">π</button>
+      <button class="inv" data-t="INV" id="rmInv">INV</button><button class="sym" data-t="links" aria-label="cursor naar links">◀</button><button class="sym" data-t="rechts" aria-label="cursor naar rechts">▶</button><button class="sym" data-t="haak" aria-label="haakje">( )</button><button class="sym" data-t="fd" aria-label="breuk of decimaal">f↔d</button>
+      <span class="rm-lbl"></span><span class="rm-lbl"></span><span class="rm-lbl"></span><span class="rm-lbl"></span><span class="rm-lbl">AC</span>
+      <button class="cijfer" data-t="7">7</button><button class="cijfer" data-t="8">8</button><button class="cijfer" data-t="9">9</button><button class="rood" data-t="DEL">DEL</button><button class="rood" data-t="C">C</button>
+      <button class="cijfer" data-t="4">4</button><button class="cijfer" data-t="5">5</button><button class="cijfer" data-t="6">6</button><button class="sym" data-t="×" style="font-size:24px">×</button><button class="sym" data-t="÷" style="font-size:24px">÷</button>
+      <button class="cijfer" data-t="1">1</button><button class="cijfer" data-t="2">2</button><button class="cijfer" data-t="3">3</button><button class="sym" data-t="+" style="font-size:24px">+</button><button class="sym" data-t="−" style="font-size:24px">−</button>
+      <button class="cijfer" data-t="0">0</button><button data-t="," style="font-size:22px">,</button><button class="sym" data-t="neg" aria-label="negatief">(−)</button><button class="ans" data-t="ANS">ANS</button><button class="blauw" data-t="=">=</button>
+      <button class="kopieer" data-t="kopieer" id="rmKopieer" title="Zet de berekening en het antwoord in het antwoordvak">⧉ Kopieer naar antwoordvak</button>
+    </div>
+    <div class="rm-melding" id="rmMelding" role="status"></div>
+  </div>
+</div>
+<div class="overlay" id="overlay" hidden>
+  <div class="ov-doos" role="dialog" aria-modal="true" aria-labelledby="ovTitel">
+    <h2 id="ovTitel">Stap voor stap</h2>
+    <div id="ovInhoud"></div>
+    <div class="knoppen"><button class="knop hoofd" id="ovSluit">Ik snap het, ik probeer het zelf</button></div>
+  </div>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+"use strict";
+/* =========================================================
+   HULPFUNCTIES
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const VARWOORDEN = ['aantal minuten','aantal uren','aantal uur','aantal liters','kosten','hoogte','lengte','leeftijd','afstand','tijd'];
+// zet losse letters (variabelen) en woordvariabelen cursief
+function fmt(s){
+  let t = esc(s);
+  t = t.replace(/(^|[^A-Za-zÀ-ÿ'’])([a-z])(?=$|[^A-Za-zÀ-ÿ'’])/g, '$1<i>$2</i>');
+  return t;
+}
+function fmtF(s){ // formule: ook woordvariabelen cursief
+  let t = fmt(s);
+  VARWOORDEN.forEach(w => { t = t.replace(new RegExp('(^|[^A-Za-z>])(' + w + ')(?=$|[^A-Za-z<])','g'), '$1<i>$2</i>'); });
+  return t;
+}
+// splitst tekst zodat elke zin op een eigen regel komt
+function splitsZinnen(t){ return String(t).split(/(?<=[.?!])\s+(?=[A-Z0-9−€(❶❷❸•ÉÈ]|[a-z]\s*=)/); }
+function zinnen(lines){
+  return lines.map(l => {
+    if (l === '') return '<div class="witregel"></div>';
+    if (l.startsWith('F:')) return `<span class="zin formuleregel">${fmtF(l.slice(2))}</span>`;
+    return splitsZinnen(l).map(z => `<span class="zin">${fmtF(z)}</span>`).join('');
+  }).join('');
+}
+function regels(t){ return splitsZinnen(t).map(z => fmtF(z)).join('<br>'); }
+function parseNum(v){
+  if (v == null) return NaN;
+  let s = String(v).trim().toLowerCase()
+    .replace(/[−–—‐‑]/g, '-')
+    .replace(/euro|€|liters?|l$|cm|uur|minuten|min$/g, '')
+    .replace(/[,.]-+$/, '')            // 21,- en 21.-
+    .replace(/\s+/g, '').replace(/^\+/, '')
+    .replace(/^-+/, m => m.length % 2 ? '-' : '');   // dubbele min-tekens getypt
+  if (/^-?\d+,\d+$/.test(s)) s = s.replace(',', '.');
+  if (s === '' || s === '-') return NaN;
+  if (!/^-?\d*\.?\d+$/.test(s)) return NaN;
+  return Number(s);
+}
+function parseTijd(v){
+  const s = String(v).trim().toLowerCase().replace(/^om/, '').replace(/uur/g, '').replace(/\s+/g, ':').replace(/[.u,;h]/g, ':').replace(/:+/g, ':').replace(/^:|:$/g, '');
+  const m = s.match(/^(\d{1,2}):?(\d{2})$/);
+  if (!m || +m[1] > 23 || +m[2] > 59) return null;
+  return Number(m[1]) * 60 + Number(m[2]);
+}
+const nu = () => Date.now();
+const sec = ms => Math.max(0, Math.round(ms / 1000));
+
+/* ---------- formule-parser (voor gelijkwaardigheid) ---------- */
+function normFormule(s){
+  return String(s).toLowerCase().replace(/^\s*dus\s*/, '').replace(/[−–—‐‑]/g,'-').replace(/[×·∙⋅]/g,'*').replace(/÷|:/g,'/').replace(/,/g,'.').replace(/\s+/g,'').replace(/\.$/, '').replace(/==+/g, '=');
+}
+// 'x' als keerteken als x geen letter in de formule is
+function normFormuleX(s, letters){
+  let n = normFormule(s);
+  if (!letters.includes('x')) n = n.replace(/x/g, '*');
+  return n;
+}
+function tokens(s){
+  const out = []; let i = 0;
+  while (i < s.length){
+    const c = s[i];
+    if (/[0-9.]/.test(c)){ let j = i; while (j < s.length && /[0-9.]/.test(s[j])) j++; out.push({t:'n', v:parseFloat(s.slice(i,j))}); i = j; continue; }
+    if (/[a-z]/.test(c)){ out.push({t:'v', v:c}); i++; continue; }
+    if ('+-*/()'.includes(c)){ out.push({t:c}); i++; continue; }
+    throw new Error('teken');
+  }
+  // impliciete vermenigvuldiging invoegen
+  const res = [];
+  out.forEach((tk, k) => {
+    const p = res[res.length - 1];
+    if (p && (p.t === 'n' || p.t === 'v' || p.t === ')') && (tk.t === 'n' || tk.t === 'v' || tk.t === '(')) res.push({t:'*', impl:true});
+    res.push(tk);
+  });
+  return res;
+}
+function parseExpr(s){
+  const tk = tokens(s); let p = 0;
+  const peek = () => tk[p], eat = t => { if (!tk[p] || tk[p].t !== t) throw new Error('syntax'); p++; };
+  function expr(){ let n = term(); while (peek() && (peek().t === '+' || peek().t === '-')){ const o = tk[p++].t; const r = term(); const l = n; n = o === '+' ? (e => l(e) + r(e)) : (e => l(e) - r(e)); } return n; }
+  function term(){ let n = unary(); while (peek() && (peek().t === '*' || peek().t === '/')){ const o = tk[p++].t; const r = unary(); const l = n; n = o === '*' ? (e => l(e) * r(e)) : (e => l(e) / r(e)); } return n; }
+  function unary(){ if (peek() && peek().t === '-'){ p++; const u = unary(); return e => -u(e); } if (peek() && peek().t === '+'){ p++; return unary(); } return atom(); }
+  function atom(){ const t = peek(); if (!t) throw new Error('eind');
+    if (t.t === 'n'){ p++; return () => t.v; }
+    if (t.t === 'v'){ p++; return e => { if (!(t.v in e)) throw new Error('var:' + t.v); return e[t.v]; }; }
+    if (t.t === '('){ p++; const n = expr(); eat(')'); return n; }
+    throw new Error('syntax'); }
+  const f = expr(); if (p !== tk.length) throw new Error('syntax'); return f;
+}
+function vergelijking(s){ // geeft {uit, f} of gooit fout
+  const n = normFormule(s); const delen = n.split('=');
+  if (delen.length !== 2 || !delen[0] || !delen[1]) throw new Error('is');
+  if (/^[a-z]$/.test(delen[0]) && !/^[a-z]$/.test(delen[1])) return {uit: delen[0], f: parseExpr(delen[1]), expr: delen[1]};
+  if (/^[a-z]$/.test(delen[1])) return {uit: delen[1], f: parseExpr(delen[0]), expr: delen[0]};
+  throw new Error('uitvoer');
+}
+function gelijkwaardig(orig, antw, invoerVars){
+  const o = vergelijking(orig); const a = vergelijking(antw);
+  if (o.uit !== a.uit) return false;
+  const proef = [-3.7, -1, 0, 1.3, 2, 5.5, 10];
+  for (let k = 0; k < proef.length; k++){
+    const env = {}; invoerVars.forEach((v, j) => env[v] = proef[(k + j * 2) % proef.length] + j * .37);
+    const x = o.f(env), y = a.f(env);
+    if (!isFinite(y) || Math.abs(x - y) > 1e-6 * Math.max(1, Math.abs(x))) return false;
+  }
+  return true;
+}
+
+/* =========================================================
+   GRAFIEK (SVG)
+   ========================================================= */
+function maakGrafiek(cfg, opties = {}){
+  const W = 560, H = 440, m = {l: 54, r: 40, t: 30, b: 50};
+  const [x0, x1] = cfg.x, [y0, y1] = cfg.y;
+  const X = v => m.l + (v - x0) / (x1 - x0) * (W - m.l - m.r);
+  const Y = v => H - m.b - (v - y0) / (y1 - y0) * (H - m.t - m.b);
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`); svg.setAttribute('class', 'graf'); svg.setAttribute('role', 'img');
+  svg.setAttribute('aria-label', 'Assenstelsel met ' + cfg.lx + ' horizontaal en ' + cfg.ly + ' verticaal');
+  const el = (n, a, txt) => { const e = document.createElementNS(ns, n); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; };
+  const gs = cfg.gridY || cfg.ys, gx = cfg.gridX || cfg.xs;
+  for (let v = x0; v <= x1 + 1e-9; v += gx) el('line', {x1: X(v), x2: X(v), y1: Y(y0), y2: Y(y1), stroke: '#E1D2F0', 'stroke-width': 1});
+  for (let v = y0; v <= y1 + 1e-9; v += gs) el('line', {x1: X(x0), x2: X(x1), y1: Y(v), y2: Y(v), stroke: '#E1D2F0', 'stroke-width': 1});
+  const ax = Math.min(Math.max(0, y0), y1), ay = Math.min(Math.max(0, x0), x1);
+  el('line', {x1: X(x0), x2: X(x1) + 14, y1: Y(ax), y2: Y(ax), stroke: '#5E0696', 'stroke-width': 2.5});
+  el('line', {x1: X(ay), x2: X(ay), y1: Y(y0), y2: Y(y1) - 14, stroke: '#5E0696', 'stroke-width': 2.5});
+  el('path', {d: `M${X(x1)+18},${Y(ax)} l-10,-5 v10 z`, fill: '#5E0696'});
+  el('path', {d: `M${X(ay)},${Y(y1)-18} l-5,10 h10 z`, fill: '#5E0696'});
+  const lab = cfg.labX || cfg.xs;
+  for (let v = x0; v <= x1 + 1e-9; v += lab){ const r = Math.round(v * 100) / 100; if (r === 0 && ay === 0) continue;
+    const tx = cfg.labTekstX ? cfg.labTekstX(r) : String(r).replace('-', '−'); if (tx == null) continue;
+    el('text', {x: X(r), y: Y(ax) + 20, 'text-anchor': 'middle', 'font-size': 13, fill: '#2A0A46', 'font-family': 'Montserrat'}, tx); }
+  const laby = cfg.labY || cfg.ys;
+  for (let v = y0; v <= y1 + 1e-9; v += laby){ const r = Math.round(v * 100) / 100; if (r === 0) continue;
+    const ty = cfg.labTekstY ? cfg.labTekstY(r) : String(r).replace('-', '−'); if (ty == null) continue;
+    el('text', {x: X(ay) - 8, y: Y(r) + 4, 'text-anchor': 'end', 'font-size': 13, fill: '#2A0A46', 'font-family': 'Montserrat'}, ty); }
+  el('text', {x: X(ay) - 8, y: Y(ax) + 20, 'text-anchor': 'end', 'font-size': 13, fill: '#2A0A46', 'font-family': 'Montserrat', 'font-style': cfg.oorsprong ? 'italic' : 'normal'}, cfg.oorsprong || '0');
+  if (cfg.lx) el('text', {x: X(x1) + 4, y: Y(ax) + 38, 'text-anchor': 'end', 'font-size': 14, 'font-style': 'italic', 'font-weight': 600, fill: '#5E0696', 'font-family': 'Montserrat'}, cfg.lx + ' →');
+  if (cfg.ly) el('text', {x: X(ay) + 10, y: Y(y1) - 4, 'font-size': 14, 'font-style': 'italic', 'font-weight': 600, fill: '#5E0696', 'font-family': 'Montserrat'}, cfg.ly + ' ↑');
+  // vaste lijnen
+  (opties.lijnen || []).forEach(L => {
+    if (L.pts){ // knikgrafiek door gegeven punten
+      el('polyline', {points: L.pts.map(p => X(p[0]) + ',' + Y(p[1])).join(' '), fill: 'none', stroke: L.kleur || '#E924D5', 'stroke-width': 3.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'data-vast': 1});
+      if (L.label){ const p = L.pts[L.pts.length - 1]; el('text', {'data-vast': 1, x: X(p[0]) + 8, y: Y(p[1]) + 6 + (L.dy || 0), 'font-size': 17, 'font-weight': 800, fill: L.kleur || '#E924D5', 'font-family': 'Montserrat'}, L.label); }
+      return;
+    }
+    const pts = []; const st = (x1 - x0) / 200;
+    for (let v = x0; v <= x1 + 1e-9; v += st){ const w = L.f(v); if (w >= y0 - 1e-9 && w <= y1 + 1e-9) pts.push([v, w]); }
+    if (pts.length > 1) el('line', {'data-vast': 1, x1: X(pts[0][0]), y1: Y(pts[0][1]), x2: X(pts[pts.length-1][0]), y2: Y(pts[pts.length-1][1]), stroke: L.kleur || '#E924D5', 'stroke-width': 3.5, 'stroke-linecap': 'round'});
+    if (L.label){ const p = pts[Math.floor(pts.length * (L.pos || .85))]; el('text', {'data-vast': 1, x: X(p[0]) + 8, y: Y(p[1]) - 10, 'font-size': 18, 'font-weight': 800, fill: L.kleur || '#E924D5', 'font-family': 'Montserrat'}, L.label); }
+  });
+  (opties.stippen || []).forEach(([px, py]) => el('circle', {cx: X(px), cy: Y(py), r: 6, fill: '#2A0A46'}));
+  (opties.letters || []).forEach(([px, py, n, dx = 9, dy = 20]) => { el('circle', {cx: X(px), cy: Y(py), r: 7, fill: '#E924D5'}); el('text', {x: X(px) + dx, y: Y(py) + dy, 'font-size': 16, 'font-style': 'italic', 'font-weight': 700, fill: '#2A0A46', 'font-family': 'Montserrat'}, n); });
+  (opties.punten || []).forEach(([px, py]) => { el('circle', {cx: X(px), cy: Y(py), r: 7, fill: '#5E0696'}); el('text', {x: X(px) + 10, y: Y(py) - 10, 'font-size': 14, 'font-weight': 700, fill: '#5E0696', 'font-family': 'Montserrat'}, `(${px}, ${py})`.replace(/-/g, '−')); });
+  // interactief tekenen
+  if (opties.interactief){
+    const snx = cfg.snapX || 1, sny = cfg.snapY || 1;
+    // fijne hulplijnen op de plekken waar een punt kan komen
+    if (sny < gs) for (let v = y0; v <= y1 + 1e-9; v += sny) el('line', {x1: X(x0), x2: X(x1), y1: Y(v), y2: Y(v), stroke: '#F1E8F8', 'stroke-width': 1, 'stroke-dasharray': '3 4'});
+    svg.querySelectorAll('[data-vast]').forEach(e => svg.appendChild(e)); // vaste lijnen boven de hulplijnen
+    const laag = document.createElementNS(ns, 'g'); svg.appendChild(laag);
+    const spook = document.createElementNS(ns, 'g'); spook.setAttribute('pointer-events', 'none'); spook.style.display = 'none'; svg.appendChild(spook);
+    spook.innerHTML = `<line class="hx" stroke="none"/><line class="hy" stroke="none"/><circle r="9" fill="none" stroke="#E924D5" stroke-width="3"/><rect rx="8" fill="#5E0696"/><text font-size="15" font-weight="700" fill="#fff" font-family="Montserrat"></text>`;
+    const vang = el('rect', {x: m.l - 14, y: m.t - 14, width: W - m.l - m.r + 28, height: H - m.t - m.b + 28, fill: 'transparent', class: 'klik'});
+    const naarPunt = ev => {
+      const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY;
+      const q = pt.matrixTransform(svg.getScreenCTM().inverse());
+      const vx = x0 + (q.x - m.l) / (W - m.l - m.r) * (x1 - x0), vy = y0 + (H - m.b - q.y) / (H - m.t - m.b) * (y1 - y0);
+      const px = Math.round(Math.round(vx / snx) * snx * 100) / 100, py = Math.round(Math.round(vy / sny) * sny * 100) / 100;
+      if (px < x0 || px > x1 || py < y0 || py > y1) return null;
+      return [px, py];
+    };
+    const toonSpook = p => {
+      if (!p || (opties.slot && opties.slot())){ spook.style.display = 'none'; return; }
+      spook.style.display = '';
+      const [px, py] = p, cx = X(px), cy = Y(py);
+      const hx = spook.querySelector('.hx'), hy = spook.querySelector('.hy');
+      hx.setAttribute('x1', X(Math.min(Math.max(0, x0), x1))); hx.setAttribute('x2', cx); hx.setAttribute('y1', cy); hx.setAttribute('y2', cy);
+      hy.setAttribute('x1', cx); hy.setAttribute('x2', cx); hy.setAttribute('y1', Y(Math.min(Math.max(0, y0), y1))); hy.setAttribute('y2', cy);
+      spook.querySelector('circle').setAttribute('cx', cx); spook.querySelector('circle').setAttribute('cy', cy);
+      const t = spook.querySelector('text'); t.textContent = '';
+      const bw = t.textContent.length * 9 + 14, bx = cx + 14 + bw > W ? cx - 14 - bw : cx + 14, by = cy - 40 < 0 ? cy + 12 : cy - 40;
+      const r = spook.querySelector('rect'); r.setAttribute('display', 'none'); r.setAttribute('x', bx); r.setAttribute('y', by); r.setAttribute('width', bw); r.setAttribute('height', 28);
+      t.setAttribute('x', bx + 7); t.setAttribute('y', by + 19);
+    };
+    vang.addEventListener('pointermove', ev => toonSpook(opties.gum && opties.gum() ? null : naarPunt(ev)));
+    vang.addEventListener('pointerleave', () => toonSpook(null));
+    const teken = () => {
+      laag.innerHTML = '';
+      const pts = opties.punt().slice().sort((a, b) => a[0] - b[0]);
+      if (opties.volgorde && pts.length >= 2){ // punten verbinden: op volgorde van x, of in de volgorde van klikken
+        const rij = opties.volgorde === 'klik' ? opties.punt() : pts;
+        const ln = document.createElementNS(ns, 'polyline');
+        Object.entries({points: rij.map(p => X(p[0]) + ',' + Y(p[1])).join(' '), fill: 'none', stroke: '#E924D5', 'stroke-width': 3.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round'}).forEach(([k, v]) => ln.setAttribute(k, v));
+        laag.appendChild(ln);
+      } else if (pts.length >= 2){
+        const a = pts[0], b = pts[pts.length - 1];
+        const ln = document.createElementNS(ns, 'line');
+        Object.entries({x1: X(a[0]), y1: Y(a[1]), x2: X(b[0]), y2: Y(b[1]), stroke: '#E924D5', 'stroke-width': 3.5, 'stroke-linecap': 'round'}).forEach(([k, v]) => ln.setAttribute(k, v));
+        laag.appendChild(ln);
+      }
+      pts.forEach(([px, py]) => { const c = document.createElementNS(ns, 'circle'); c.setAttribute('cx', X(px)); c.setAttribute('cy', Y(py)); c.setAttribute('r', 7); c.setAttribute('fill', opties.kleurPunt ? opties.kleurPunt(px, py) : '#5E0696'); laag.appendChild(c);
+        const t = document.createElementNS(ns, 'text'); t.setAttribute('x', X(px) + 10); t.setAttribute('y', Y(py) + 20); t.setAttribute('font-size', 12); t.setAttribute('font-weight', 700); t.setAttribute('fill', '#5E0696'); t.setAttribute('font-family', 'Montserrat'); laag.appendChild(t); });
+    };
+    const wissel = (px, py) => {
+      const pts = opties.punt(); const i = pts.findIndex(p => p[0] === px && p[1] === py);
+      const gum = opties.gum && opties.gum(), meld = opties.melding || (() => {});
+      if (gum){ if (i < 0) return meld('Klik met de gum op een punt om het weg te halen.'); pts.splice(i, 1); meld('Punt weggehaald.'); }
+      else if (opties.gum){ if (i >= 0) return meld('Dit punt staat er al. Wil je het weghalen? Klik eerst op de gum.'); pts.push([px, py]); meld(''); }
+      else { if (i >= 0) pts.splice(i, 1); else pts.push([px, py]); }
+      teken(); opties.bijWijziging && opties.bijWijziging();
+    };
+    vang.addEventListener('click', ev => {
+      if (opties.slot && opties.slot()) return;
+      const p = naarPunt(ev); if (!p) return; wissel(p[0], p[1]); toonSpook(opties.gum && opties.gum() ? null : p);
+    });
+    svg._teken = teken; svg._wissel = wissel; svg._snap = [snx, sny]; teken();
+  }
+  svg._X = X; svg._Y = Y; svg._W = W; svg._H = H; svg._as = [ax, ay];
+  return svg;
+}
+
+/* =========================================================
+   INHOUD: CONTEXTEN EN OPDRACHTEN
+   H4 Procenten – oefenen met Professor Pi Pluis
+   ========================================================= */
+const D43 = 'WI/K/4 Algebraïsche verbanden · grafieken aflezen en vergelijken';
+const D43t = 'WI/K/4 Algebraïsche verbanden · grafiek tekenen';
+const D42 = 'WI/K/4 Algebraïsche verbanden · tabellen maken en aflezen';
+const D45 = 'WI/K/4 Algebraïsche verbanden · rekenen met woordformules';
+const D46 = 'WI/K/4 Algebraïsche verbanden · tabel, grafiek en formule';
+const D6c = 'WI/K/6 Meetkunde · coördinaten in het platte vlak';
+
+const komma = v => Number.isInteger(v) ? String(v) : v.toFixed(2).replace('.', ',');
+const G1 = {x: [0, 120], y: [0, 140], xs: 10, ys: 20, labTekstX: v => v > 110 ? null : String(v), lx: 'tijd in minuten', ly: 'afstand in km'};
+const G2leeg = {x: [0, 13], y: [0, 275], xs: 1, ys: 25, labTekstX: v => v > 12 ? null : String(v), labTekstY: v => v === 25 ? '25' : null, lx: 'leeftijd in jaren', ly: '…… in cm'};
+const G2 = {x: [0, 13], y: [0, 275], xs: 1, ys: 25, snapX: 1, snapY: 25, labTekstX: v => v > 12 ? null : String(v), labTekstY: v => v > 250 ? null : String(v), lx: 'leeftijd in jaren', ly: 'hoogte in cm'};
+const G3leeg = {x: [0, 16], y: [0, 4], xs: 2, ys: .5, labTekstX: v => v <= 6 ? String(v) : (v <= 14 ? '…' : null), labTekstY: v => v === .5 ? '0,50' : v === 1 ? '1,-' : (v <= 3.5 ? '…' : null), lx: 'aantal minuten', ly: 'kosten in euro\'s'};
+const G3 = {x: [0, 16], y: [0, 4], xs: 2, ys: .5, snapX: 2, snapY: .1, labTekstX: v => v > 14 ? null : String(v), labTekstY: v => v > 3.5 ? null : komma(v), lx: 'aantal minuten', ly: 'kosten in euro\'s'};
+const G4 = {x: [-4, 28], y: [-10, 6], xs: 4, ys: 2, labTekstX: v => (v < 0 || v > 24) ? null : String(v), labTekstY: v => (v < -8 || v > 4) ? null : String(v).replace('-', '−'), lx: 'tijd in uren', ly: 'temperatuur in °C'};
+const G6leeg = {x: [0, 105], y: [0, 7000], xs: 15, ys: 1000, labTekstX: v => v <= 30 ? String(v) : (v <= 90 ? '…' : null), labTekstY: v => v <= 2000 ? String(v) : (v <= 6000 ? '…' : null), lx: 'aantal minuten', ly: '……'};
+const G6 = {x: [0, 105], y: [0, 7000], xs: 15, ys: 1000, snapX: 15, snapY: 200, labTekstX: v => v > 90 ? null : String(v), labTekstY: v => v > 6000 ? null : String(v), lx: 'aantal minuten', ly: 'aantal liters'};
+const G7 = {x: [0, 9], y: [0, 36], xs: 1, ys: 4, labTekstX: v => v > 8 ? null : String(v), labTekstY: v => v > 32 ? null : String(v), lx: 'aantal uur', ly: 'lengte in cm'};
+const G8 = {x: [0, 9], y: [0, 110], xs: 1, ys: 10, snapX: 1, snapY: 5, labTekstX: v => v > 8 ? null : String(v), labTekstY: v => v > 100 ? null : String(v), lx: 'aantal uren', ly: 'hoogte in cm'};
+const GK9 = {x: [-5, 5], y: [-5, 5], xs: 1, ys: 1, snapX: 1, snapY: 1, labTekstX: v => Math.abs(v) > 4 ? null : String(v).replace('-', '−'), labTekstY: v => Math.abs(v) > 4 ? null : String(v).replace('-', '−'), oorsprong: 'O', lx: '', ly: ''};
+const GK11 = {x: [-4, 6], y: [0, 140], xs: 1, ys: 20, snapX: 1, snapY: 10, labTekstX: v => (v < -3 || v > 5) ? null : String(v).replace('-', '−'), labTekstY: v => v > 120 ? null : String(v), lx: 'tijd in minuten', ly: 'aantal liters'};
+
+const P1 = [[0, 0], [30, 40], [40, 60], [70, 90], [90, 110], [110, 130]];
+const P2 = [[0, 0], [2, 50], [4, 75], [6, 100], [9, 175], [12, 250]];
+const P4S = [[0, -2], [4, -1], [8, 2], [12, 4], [16, 3], [20, 1], [24, -3]];
+const P4B = [[0, -5], [4, -6], [8, -1], [12, 2], [16, 3], [20, 2], [24, 0]];
+const P6 = [[0, 6000], [15, 5200], [30, 4000], [45, 2000], [60, 1400], [75, 600], [90, 0]];
+const PK9 = [[2, -3, 'A'], [-4, -1, 'B', -24, 22], [3, 2, 'C'], [-3, 0, 'D', -24, -10], [-2, 3, 'E']];
+const PK10 = [[-3, -3], [-3, 3], [0, 0], [3, 3], [3, -3]];
+const PK11 = [[-3, 0], [-2, 10], [-1, 20], [0, 40], [1, 60], [2, 70], [3, 90], [4, 110]];
+const fNoah = m => 0.8 + 0.15 * m, fLina = m => 0.25 * m;
+const fV1 = u => u * 10 + 20, fV2 = u => 45 + u * 5;
+const PAARS = '#5E0696', ROZE = '#E924D5';
+
+const T2 = {kop: ['leeftijd in jaren', 'hoogte in cm'], xs: [0, 2, 4, 6, 9, 12], ans: [0, 50, 75, 100, 175, 250]};
+const T6 = {kop: ['aantal minuten', 'aantal liters'], xs: [0, 15, 30, 45, 60, 75, 90], ans: [6000, 5200, 4000, 2000, 1400, 600, 0]};
+const TK11 = {kop: ['tijd in minuten', 'aantal liters'], xs: [-3, -2, -1, 0, 1, 2, 3, 4], ans: [0, 10, 20, 40, 60, 70, 90, 110]};
+
+function formuleKaart(titel, regels){ return `<div class="kaart formule"><div class="kl">${titel}</div>${regels.map(r => `<div>${fmtF(r)}</div>`).join('')}</div>`; }
+function formuleLijst(titel, regels){ return `<div class="kaart"><div class="kl">${titel}</div><div class="formulelijst">${regels.map(([n, f]) => `<div><span class="nr">${n}</span>${fmtF(f)}</div>`).join('')}</div></div>`; }
+function statTabel(h, xs, ys){ return `<div class="tabel-wrap"><table class="wt${h.every(k => k.length <= 3) ? ' kort' : ''}"><tr><th>${fmtF(h[0])}</th>${xs.map(x => `<th>${String(x).replace('-', '−')}</th>`).join('')}</tr><tr><th>${fmtF(h[1])}</th>${ys.map(y => `<td class="gegeven">${y == null ? '…' : String(y).replace('-', '−')}</td>`).join('')}</tr></table></div>`; }
+
+const graf1 = () => maakGrafiek(G1, {lijnen: [{pts: P1, kleur: PAARS}], stippen: [[30, 40], [70, 90], [90, 110]]});
+const graf2 = () => maakGrafiek(G2, {lijnen: [{pts: P2, kleur: PAARS}]});
+const graf3 = () => maakGrafiek(G3, {lijnen: [{f: fNoah, kleur: PAARS, label: 'Noah', pos: .8}, {f: fLina, kleur: ROZE, label: 'Lina', pos: .9}]});
+const graf4 = () => maakGrafiek(G4, {lijnen: [{pts: P4B, kleur: ROZE, label: 'Bram', dy: -20}, {pts: P4S, kleur: PAARS, label: 'Sanne'}]});
+const graf6 = () => maakGrafiek(G6, {lijnen: [{pts: P6, kleur: PAARS}]});
+const graf7 = () => maakGrafiek(G7, {lijnen: [{f: u => 32 - 4 * u, kleur: PAARS}]});
+const graf8 = () => maakGrafiek(G8, {lijnen: [{f: fV1, kleur: PAARS, label: '①', pos: .99}, {f: fV2, kleur: ROZE, label: '②', pos: .99}]});
+const grafK11 = () => maakGrafiek(GK11, {lijnen: [{pts: PK11, kleur: PAARS}]});
+
+/* Breuken schrijf je zo: [3/4]. De app maakt er een echte breuk van.
+   strook(totaal, noemer, eenheid, letter) tekent links een strook die in gelijke delen is verdeeld.
+   Eén opdracht = één pagina. De deelvragen a, b, c staan onder elkaar:
+   - velden: de regels met invulvakjes (de berekening);
+   - delen:  bij welke regel een deelvraag begint (bij: nummer van de regel, de eerste is 0).
+   Routes: een opdracht zonder  route  is voor iedereen (de instap).
+   route: ['o'] = ondersteunend, ['d'] = doorlopend, ['u'] = uitdagend. De app kiest de route na de instap. */
+const DP1 = 'Procenten · § 4.1 Deel van een hoeveelheid';
+function strook(totaal, noemer, eenheid, letter){
+  return `<div class="bs">${letter ? `<div class="bs-letter">${esc(letter)}</div>` : ''}<div class="bs-kop">${esc(String(totaal))} ${esc(eenheid || '')}</div>
+    <div class="bs-rij">${Array.from({length: noemer}, () => '<span>?</span>').join('')}</div>
+    <div class="bs-voet">${noemer} gelijke delen</div></div>`;
+}
+const CTX = {
+  uitleg: {intro: [], links: () => ''},
+  klas:   {intro: ['In de klas van Yara zitten 28 leerlingen.'], links: () => strook(28, 4, 'leerlingen', 'a') + strook(28, 7, 'leerlingen', 'b')},
+  eerst:  {intro: [], links: () => strook(40, 8, '')},
+  een:    {intro: [], links: () => strook(60, 5, '', 'a') + strook(72, 9, '', 'b')},
+  meer:   {intro: [], links: () => strook(36, 4, '', 'a') + strook(300, 6, '', 'b') + strook(4200, 7, '', 'c')},
+  fiets:  {intro: ['Sem en Noor doen mee aan een fietstocht.', 'De fietstocht is 42 km lang.'], links: () => strook(42, 6, 'km', 'a') + strook(42, 3, 'km', 'b')},
+  hulp4:  {intro: [], links: () => strook(56, 7, '', 'a') + strook(40, 8, '', 'b') + strook(63, 9, '', 'c')},
+  ravi:   {intro: ['Ravi spaart voor voetbalschoenen.', 'De schoenen kosten € 90.'], links: () => strook(90, 9, 'euro')},
+  terug:  {intro: [], links: () => formuleKaart('Terugrekenen', ['Je weet een deel.', 'Je zoekt het geheel.', 'Reken eerst 1 deel uit.'])},
+  samen:  {intro: ['In winkel A werken 45 mensen.', 'In winkel B werken 64 mensen.'], links: () => strook(45, 5, 'mensen', 'A') + strook(64, 8, 'mensen', 'B')},
+  spaar:  {intro: ['Lina spaart voor een koptelefoon.', 'De koptelefoon kost € 84.'], links: () => strook(84, 4, 'euro', 'a')}
+};
+
+const DP2 = 'Procenten · § 4.2 Procenten en percentages', DP3 = 'Procenten · § 4.3 Handige percentages', DP4 = 'Procenten · § 4.4 Procenten en breuken', DP5 = 'Procenten · § 4.5 Procenten en aantallen';
+/* rooster(kolommen, rijen, vlakken, opties) tekent een rooster met gekleurde hokjes.
+   vlakken: [{n: 30, kleur: 'roze'}]  kleuren: paars, roze, blauw, geel, groen.  opties: {rond: true} voor rondjes. */
+const KLEURNAAM = {paars: 'paars', roze: 'roze', blauw: 'blauw', geel: 'geel', groen: 'groen'};
+function rooster(kol, rij, vlakken, opt){
+  opt = opt || {}; const cel = [];
+  (vlakken || []).forEach(v => { for (let i = 0; i < v.n; i++) cel.push('k-' + v.kleur + (v.op ? ' op' + v.op : '')); });
+  while (cel.length < kol * rij) cel.push('');
+  const legenda = opt.legenda === false ? '' : `<div class="rs-leg">${(vlakken || []).map(v => `<span><i class="rc k-${v.kleur}"></i>${KLEURNAAM[v.kleur]}</span>`).join('')}</div>`;
+  return `<div class="rs-blok"><div class="rs${opt.rond ? ' rond' : ''}" style="grid-template-rows:repeat(${rij},1fr);aspect-ratio:${kol}/${rij};max-width:${Math.min(360, kol * 46)}px" role="img" aria-label="${esc(opt.label || `Rooster van ${kol} bij ${rij}`)}">${cel.map(c => `<span class="rc ${c}"></span>`).join('')}</div>${legenda}</div>`;
+}
+Object.assign(CTX, {
+  r40:    {intro: [], links: () => rooster(10, 10, [{n: 40, kleur: 'paars'}])},
+  r2510:  {intro: [], links: () => rooster(10, 10, [{n: 25, kleur: 'roze'}, {n: 10, kleur: 'blauw'}])},
+  r8120:  {intro: [], links: () => rooster(10, 10, [{n: 8, kleur: 'geel'}, {n: 1, kleur: 'groen'}, {n: 20, kleur: 'paars'}])},
+  r20:    {intro: [], links: () => rooster(5, 4, [{n: 10, kleur: 'roze'}])},
+  knikkers: {intro: [], links: () => rooster(8, 5, [{n: 20, kleur: 'blauw'}, {n: 12, kleur: 'geel'}, {n: 8, kleur: 'groen'}], {rond: true, label: '40 knikkers'})},
+  stickers: {intro: [], links: () => formuleKaart('Tip', ['100% is 300 stickers.', '1% is 300 : 100.'])},
+  kaartProcent: {intro: [], links: () => formuleKaart('Procent', ['per honderd'])},
+  kaartHandig:  {intro: [], links: () => formuleKaart('Handige percentages', ['50%   25%   20%   10%', 'Daar reken je makkelijk mee.'])},
+  kaartHandig2: {intro: [], links: () => formuleLijst('Handige percentages', [['50%', 'delen door 2'], ['25%', 'delen door 4'], ['20%', 'delen door 5'], ['10%', 'delen door 10']])},
+  kaartBreuk:   {intro: [], links: () => formuleLijst('Percentage en breuk', [['50%', '[1/2] deel'], ['25%', '[1/4] deel'], ['20%', '[1/5] deel'], ['10%', '[1/10] deel']])},
+  jas:     {intro: ['Yusuf koopt een jas van € 120.'], links: () => formuleKaart('Jas', ['€ 120', '10% korting'])},
+  winkels: {intro: [], links: () => formuleLijst('Koptelefoon', [['Winkel A', '€ 80 met 25% korting'], ['Winkel B', '€ 70 met 10% korting']])},
+  kaartNaarBreuk:   {intro: [], links: () => formuleKaart('Van procent naar breuk', ['Procent is per honderd.', '30% = 30/100 = 3/10'])},
+  kaartNaarProcent: {intro: [], links: () => formuleKaart('Van breuk naar procent', ['Maak de noemer 100.', '3/25 = 12/100 = 12%'])},
+  huisdier: {intro: [], links: () => formuleKaart('Van breuk naar procent', ['Maak de noemer 100.', 'Doe hetzelfde met de teller.'])},
+  hockey:   {intro: [], links: () => formuleLijst('Hockey', [['Groep A', '20 kinderen, 35% speelt hockey'], ['Groep B', '25 kinderen, 9 spelen hockey']])},
+  rugzak:   {intro: ['Een rugzak kost € 60.'], links: () => formuleKaart('Rugzak', ['€ 60', '30% korting'])},
+  kaartSlim: {intro: [], links: () => formuleKaart('Slim rekenen', ['70% is 7 keer 10%.', '35% is 35 keer 1%.'])},
+  kaartEen:  {intro: [], links: () => formuleKaart('Aanpak', ['1. Bereken 1%: delen door 100.', '2. Doe keer het percentage.'])},
+  camping:  {intro: ['Op een camping staan 650 tenten.'], links: () => formuleKaart('Aanpak', ['1. Bereken 1%: delen door 100.', '2. Doe keer het percentage.'])},
+  sport:    {intro: ['Een sportwinkel geeft 15% korting.', 'Jesse koopt voor € 64.'], links: () => formuleKaart('Aanpak', ['1. Bereken 1%: delen door 100.', '2. Doe keer het percentage.'])},
+  kaartMeer: {intro: [], links: () => formuleKaart('Meer dan 100%', ['De oude prijs is 100%.', 'Er komt procent bij.', 'Reken met het nieuwe percentage.'])}
+});
+
+const SECTIES = [
+ {id: 's1', titel: '§ 4.1 Deel', items: [
+  {id: 'u1', theorie: true, titel: 'Uitleg: een deel van een hoeveelheid', ctx: 'uitleg',
+   anim: {soort: 'deel', totaal: 30, teller: 2, noemer: 5, ding: 'stickers'},
+   controle: {vraag: 'Je wilt [3/4] deel van 20 berekenen. Wat doe je eerst?', opties: ['20 delen door 4', '20 delen door 3', '20 keer 4'], ans: 0, terug: 1}},
+
+  {id: '1', nr: '1', deel: '', ctx: 'klas', dom: DP1, vraag: ['Schrijf bij elke vraag je berekening op.'], type: 'stappen', nodig: ['28', '1/4', '1/7'],
+   delen: [{letter: 'a', bij: 0, vraag: ['[1/4] deel van de leerlingen komt met de fiets.', 'Hoeveel leerlingen komen met de fiets?']},
+           {letter: 'b', bij: 1, vraag: ['[1/7] deel van de leerlingen heeft een hond.', 'Hoeveel leerlingen hebben een hond?']}],
+   velden: [{tpl: '28 : {} = {} leerlingen', ans: [4, 7]}, {tpl: '28 : {} = {} leerlingen', ans: [7, 4]}],
+   hint: ['Kijk naar de noemer van de breuk. Dat is het getal onder de streep.', 'Bij a deel je 28 door 4.', 'Bij b deel je 28 door 7.'],
+   uitleg: ['a: de noemer is 4. 28 : 4 = 7 leerlingen.', 'b: de noemer is 7. 28 : 7 = 4 leerlingen.']},
+
+  {id: '2', nr: '2', deel: '', ctx: 'eerst', dom: DP1, vraag: ['Je wilt [3/8] deel van 40 berekenen.', 'Wat doe je eerst?'], type: 'mk', nodig: ['40', '3/8'],
+   opties: ['40 delen door 8', '40 delen door 3', '40 keer 8', '40 keer 3'], ans: 0,
+   hint: ['Je begint altijd met de noemer.', 'De noemer is het getal onder de streep.'], uitleg: ['Je deelt eerst door de noemer.', 'De noemer is 8.', 'Je rekent eerst uit: 40 : 8.']},
+
+  {id: '3', nr: '3', deel: '', ctx: 'een', dom: DP1, vraag: ['Bereken.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['[1/5] deel van 60']}, {letter: 'b', bij: 1, vraag: ['[1/9] deel van 72']}],
+   velden: [{tpl: '[1/5] deel van 60 is {} : {} = {}', ans: [60, 5, 12]}, {tpl: '[1/9] deel van 72 is {} : {} = {}', ans: [72, 9, 8]}],
+   hint: ['Schrijf eerst het hele getal op.', 'Deel daarna door de noemer.', 'Bij a is de noemer 5. Bij b is de noemer 9.'],
+   uitleg: ['a: 60 : 5 = 12', 'b: 72 : 9 = 8']},
+
+  /* ondersteunende route: in plaats van opdracht 4 */
+  {id: 'O4', nr: 'O4', deel: '', ctx: 'hulp4', dom: DP1, route: ['o'], vraag: ['Bereken.', 'Vul elke regel in.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['[1/7] deel van 56']}, {letter: 'b', bij: 2, vraag: ['[3/8] deel van 40']}, {letter: 'c', bij: 5, vraag: ['[4/9] deel van 63']}],
+   velden: [{tpl: '56 : 7 = {}', ans: [8]}, {tpl: 'Dus [1/7] deel van 56 is {}', ans: [8]},
+            {tpl: '40 : 8 = {}', ans: [5]}, {tpl: 'Dan keer 3: {} × 3 = {}', ans: [5, 15]}, {tpl: 'Dus [3/8] deel van 40 is {}', ans: [15]},
+            {tpl: '63 : {} = {}', ans: [9, 7]}, {tpl: 'Dan keer 4: {} × 4 = {}', ans: [7, 28]}, {tpl: 'Dus [4/9] deel van 63 is {}', ans: [28]}],
+   hint: ['Eerst delen door de noemer. Dat is het getal onder de streep.', 'Is de teller geen 1? Doe de uitkomst dan keer de teller.', 'Bij c is de noemer 9.'],
+   uitleg: ['a: 56 : 7 = 8', 'b: 40 : 8 = 5 en 5 × 3 = 15', 'c: 63 : 9 = 7 en 7 × 4 = 28']},
+  {id: '4', nr: '4', deel: '', ctx: 'meer', dom: DP1, route: ['d', 'u'], vraag: ['Bereken.', 'Doe het in twee stappen.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['[3/4] deel van 36']}, {letter: 'b', bij: 2, vraag: ['[5/6] deel van 300']}, {letter: 'c', bij: 4, vraag: ['[2/7] deel van 4200']}],
+   velden: [{tpl: '[1/4] deel van 36 is 36 : {} = {}', ans: [4, 9]}, {tpl: '[3/4] deel is {} × 3 = {}', ans: [9, 27]},
+            {tpl: '[1/6] deel van 300 is 300 : {} = {}', ans: [6, 50]}, {tpl: '[5/6] deel is {} × 5 = {}', ans: [50, 250]},
+            {tpl: '[1/7] deel van 4200 is 4200 : {} = {}', ans: [7, 600]}, {tpl: '[2/7] deel is {} × 2 = {}', ans: [600, 1200]}],
+   hint: ['Stap 1: deel door de noemer.', 'Stap 2: doe de uitkomst keer de teller.', 'Bij c: 42 : 7 = 6, dus 4200 : 7 = 600.'],
+   uitleg: ['a: 36 : 4 = 9 en 9 × 3 = 27', 'b: 300 : 6 = 50 en 50 × 5 = 250', 'c: 4200 : 7 = 600 en 600 × 2 = 1200']},
+
+  {id: '5', nr: '5', deel: '', ctx: 'fiets', dom: DP1, route: ['o', 'd'], vraag: ['Schrijf bij elke vraag je berekening op.'], type: 'stappen', nodig: ['42', '5/6', '2/3'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Na twee uur heeft Sem [5/6] deel van de tocht gefietst.', 'Hoeveel kilometer heeft Sem gefietst?']},
+           {letter: 'b', bij: 2, vraag: ['Noor heeft na twee uur [2/3] deel van de tocht gefietst.', 'Hoeveel kilometer heeft Noor gefietst?']},
+           {letter: 'c', bij: 4, vraag: ['Hoeveel kilometer moet Noor nog fietsen?']}],
+   velden: [{tpl: '[1/6] deel is 42 : {} = {}', ans: [6, 7]}, {tpl: '[5/6] deel is {} × 5 = {} km', ans: [7, 35]},
+            {tpl: '[1/3] deel is 42 : {} = {}', ans: [3, 14]}, {tpl: '[2/3] deel is {} × 2 = {} km', ans: [14, 28]},
+            {tpl: '{} − {} = {} km', ans: [42, 28, 14]}],
+   hint: ['De hele tocht is 42 km. De twee uur heb je niet nodig.', 'Bij a en b: eerst delen door de noemer, dan keer de teller.', 'Bij c: de hele tocht min wat Noor al gefietst heeft.'],
+   uitleg: ['a: 42 : 6 = 7 en 7 × 5 = 35 km', 'b: 42 : 3 = 14 en 14 × 2 = 28 km', 'c: 42 − 28 = 14 km']},
+
+  /* ondersteunende route: in plaats van opdracht 6 */
+  {id: 'O6', nr: 'O6', deel: '', ctx: 'ravi', dom: DP1, route: ['o'], vraag: ['Na 4 maanden heeft Ravi [4/9] deel gespaard.'], type: 'stappen', nodig: ['90', '4/9', '4'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Bereken eerst [1/9] deel van 90 euro.', 'Bereken daarna [4/9] deel.']},
+           {letter: 'b', bij: 2, vraag: ['Ravi spaarde dit in 4 maanden.', 'Hoeveel euro spaart Ravi per maand?']},
+           {letter: 'c', bij: 3, vraag: ['Hoeveel euro moet Ravi nog sparen?']}],
+   velden: [{tpl: '[1/9] deel is 90 : 9 = {} euro', ans: [10]}, {tpl: '[4/9] deel is {} × 4 = {} euro', ans: [10, 40]},
+            {tpl: '{} : 4 = {} euro per maand', ans: [40, 10]},
+            {tpl: '90 − {} = {} euro', ans: [40, 50]}],
+   hint: ['Bij a: 90 : 9. Doe de uitkomst daarna keer 4.', 'Bij b: verdeel het gespaarde bedrag over 4 maanden.', 'Bij c: de prijs min wat Ravi al heeft.'],
+   uitleg: ['a: 90 : 9 = 10 en 10 × 4 = 40 euro', 'b: 40 : 4 = 10 euro per maand', 'c: 90 − 40 = 50 euro']},
+  {id: '6', nr: '6', deel: '', ctx: 'spaar', dom: DP1, route: ['d', 'u'], vraag: ['Schrijf bij elke vraag je berekening op.'], type: 'stappen', nodig: ['84', '3/4', '7'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Lina heeft al [3/4] deel van het bedrag gespaard.', 'Hoeveel euro heeft Lina gespaard?']},
+           {letter: 'b', bij: 2, vraag: ['Hoeveel euro moet Lina nog sparen?']},
+           {letter: 'c', bij: 3, vraag: ['Lina spaart 7 euro per week.', 'Hoeveel weken moet Lina nog sparen?']}],
+   velden: [{tpl: '[1/4] deel is 84 : {} = {}', ans: [4, 21]}, {tpl: '[3/4] deel is {} × 3 = {} euro', ans: [21, 63]},
+            {tpl: '{} − {} = {} euro', ans: [84, 63, 21]},
+            {tpl: '{} : {} = {} weken', ans: [21, 7, 3]}],
+   hint: ['Bij a: deel 84 door 4. Doe de uitkomst keer 3.', 'Bij b: de prijs min wat Lina al heeft.', 'Bij c: hoe vaak past 7 in het bedrag van b?'],
+   uitleg: ['a: 84 : 4 = 21 en 21 × 3 = 63 euro', 'b: 84 − 63 = 21 euro', 'c: 21 : 7 = 3 weken']},
+
+  /* uitdagende route */
+  {id: 'U1', nr: 'U1', deel: '', ctx: 'terug', dom: DP1, route: ['u'], vraag: ['Nu reken je terug.', 'Je weet een deel en je zoekt het geheel.'], type: 'stappen', nodig: ['6', '1/5', '120', '3/7'],
+   delen: [{letter: 'a', bij: 0, vraag: ['In klas 1D hebben 6 leerlingen een bril.', 'Dat is [1/5] deel van de klas.', 'Hoeveel leerlingen zitten er in klas 1D?']},
+           {letter: 'b', bij: 1, vraag: ['Op een school komen 120 leerlingen met de bus.', 'Dat is [3/7] deel van alle leerlingen.', 'Hoeveel leerlingen zitten er op deze school?']}],
+   velden: [{tpl: '6 × {} = {} leerlingen', ans: [5, 30]},
+            {tpl: '[1/7] deel is 120 : {} = {}', ans: [3, 40]}, {tpl: 'De hele school is {} × 7 = {} leerlingen', ans: [40, 280]}],
+   hint: ['Bij a: de klas bestaat uit 5 van die delen.', 'Bij b: 120 is 3 delen. Reken eerst 1 deel uit.', 'De hele school is 7 delen.'],
+   uitleg: ['a: [1/5] deel is 6. De hele klas is 6 × 5 = 30 leerlingen.', 'b: [3/7] deel is 120. [1/7] deel is 120 : 3 = 40.', 'De hele school is 40 × 7 = 280 leerlingen.']},
+  {id: 'U2', nr: 'U2', deel: '', ctx: 'samen', dom: DP1, route: ['u'], vraag: ['In winkel A komt [2/5] deel met de fiets.', 'In winkel B komt [3/8] deel met de fiets.', 'Hoeveel mensen komen er samen met de fiets?'], type: 'stappen', nodig: ['45', '64', '2/5', '3/8'],
+   velden: [{tpl: 'Winkel A: [1/5] deel is 45 : {} = {}', ans: [5, 9]}, {tpl: '[2/5] deel is {} × 2 = {} mensen', ans: [9, 18]},
+            {tpl: 'Winkel B: [1/8] deel is 64 : {} = {}', ans: [8, 8]}, {tpl: '[3/8] deel is {} × 3 = {} mensen', ans: [8, 24]},
+            {tpl: 'Samen komen er {} mensen met de fiets', ans: [42]}],
+   hint: ['Reken eerst winkel A uit. Daarna winkel B.', 'Tel de twee uitkomsten bij elkaar op.'],
+   uitleg: ['Winkel A: 45 : 5 = 9 en 9 × 2 = 18 mensen.', 'Winkel B: 64 : 8 = 8 en 8 × 3 = 24 mensen.', 'Samen: 18 + 24 = 42 mensen.']}
+ ]},
+ /* =================== LEVEL 2 · § 4.2 Procenten en percentages =================== */
+ {id: 's2', titel: '§ 4.2 Procenten', items: [
+  {id: 'ub', theorie: true, titel: 'Uitleg: wat is een procent?', ctx: 'uitleg',
+   anim: {soort: 'procent', n: 30, kleur: 'roze', naam: 'roze'},
+   controle: {vraag: 'Van 100 hokjes zijn er 45 gekleurd. Hoeveel procent is dat?', opties: ['45%', '55%', '4,5%'], ans: 0, terug: 1}},
+
+  {id: 'b1', nr: '1', deel: '', ctx: 'r40', dom: DP2, vraag: ['Het vierkant heeft 100 hokjes.', 'Kijk naar de paarse hokjes.'], type: 'stappen',
+   velden: [{tpl: '{} van de 100 hokjes zijn paars', ans: [40]}, {tpl: 'Dat is {} %', ans: [40]}, {tpl: 'Wit is 100 % − {} % = {} %', ans: [40, 60]}],
+   hint: ['Tel de paarse hokjes. Elke kolom heeft 10 hokjes.', 'Zoveel hokjes van de 100 is ook zoveel procent.', 'Alles samen is 100%.'],
+   uitleg: ['Er zijn 40 hokjes paars.', '40 van de 100 is 40%.', 'Wit is 100% − 40% = 60%.']},
+  {id: 'b2', nr: '2', deel: '', ctx: 'r2510', dom: DP2, vraag: ['Het vierkant heeft 100 hokjes.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel procent is roze?']}, {letter: 'b', bij: 1, vraag: ['Hoeveel procent is blauw?']}, {letter: 'c', bij: 2, vraag: ['Hoeveel procent is niet gekleurd?']}],
+   velden: [{tpl: 'Roze: {} van de 100 hokjes, dus {} %', ans: [25, 25]}, {tpl: 'Blauw: {} van de 100 hokjes, dus {} %', ans: [10, 10]},
+            {tpl: 'Samen gekleurd: {} %', ans: [35]}, {tpl: 'Niet gekleurd: 100 − {} = {} %', ans: [35, 65]}],
+   hint: ['Tel de hokjes per kleur.', 'Bij c: tel roze en blauw bij elkaar op.', 'Haal dat van 100 af.'],
+   uitleg: ['a: 25 hokjes roze is 25%.', 'b: 10 hokjes blauw is 10%.', 'c: 25 + 10 = 35. 100 − 35 = 65%.']},
+  {id: 'b3', nr: '3', deel: '', ctx: 'kaartProcent', dom: DP2, vraag: ['Procent betekent: per honderd.', 'Wat betekent 1%?'], type: 'mk',
+   opties: ['1 van de 100. Dat is [1/100] deel.', '1 van de 10. Dat is [1/10] deel.', 'De helft.', 'Alles.'], ans: 0,
+   hint: ['Per honderd.', 'Hoeveel hokjes van de 100 is 1 procent?'], uitleg: ['1% is 1 van de 100.', 'Dat is [1/100] deel.']},
+
+  {id: 'bO4', nr: 'O4', deel: '', ctx: 'r8120', dom: DP2, route: ['o'], vraag: ['Het vierkant heeft 100 hokjes.', 'Vul elke regel in.'], type: 'stappen',
+   velden: [{tpl: 'Geel: {} van de 100 hokjes. Dat is {} %', ans: [8, 8]}, {tpl: 'Groen: {} van de 100 hokjes. Dat is {} %', ans: [1, 1]},
+            {tpl: 'Paars: {} van de 100 hokjes. Dat is {} %', ans: [20, 20]}, {tpl: 'Samen gekleurd: {} hokjes', ans: [29]}, {tpl: 'Niet gekleurd: {} %', ans: [71]}],
+   hint: ['Tel de hokjes per kleur.', 'Samen: tel de drie getallen bij elkaar op.', 'Niet gekleurd: 100 min de gekleurde hokjes.'],
+   uitleg: ['Geel 8%, groen 1%, paars 20%.', 'Samen: 8 + 1 + 20 = 29 hokjes.', 'Niet gekleurd: 100 − 29 = 71%.']},
+  {id: 'b4', nr: '4', deel: '', ctx: 'r20', dom: DP2, route: ['d', 'u'], vraag: ['Deze rechthoek heeft 5 bij 4 hokjes.', 'Let op: dat zijn geen 100 hokjes.'], type: 'stappen', nodig: ['5', '4', '25'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Uit hoeveel hokjes bestaat de rechthoek?']}, {letter: 'b', bij: 1, vraag: ['De helft is roze.', 'Hoeveel hokjes zijn roze?']},
+           {letter: 'c', bij: 2, vraag: ['Hoeveel procent is roze?']}, {letter: 'd', bij: 3, vraag: ['Je wilt 25% blauw kleuren.', 'Hoeveel hokjes zijn dat?']}],
+   velden: [{tpl: '5 × 4 = {} hokjes', ans: [20]}, {tpl: '{} : 2 = {} hokjes', ans: [20, 10]}, {tpl: 'De helft is {} %', ans: [50]},
+            {tpl: '25% is [1/4] deel. {} : 4 = {} hokjes', ans: [20, 5]}],
+   hint: ['Bij a: 5 keer 4.', 'De helft van alles is altijd 50%.', 'Bij d: deel het aantal hokjes door 4.'],
+   uitleg: ['a: 5 × 4 = 20 hokjes.', 'b: 20 : 2 = 10 hokjes.', 'c: de helft is 50%.', 'd: 20 : 4 = 5 hokjes.']},
+  {id: 'b5', nr: '5', deel: '', ctx: 'knikkers', dom: DP2, route: ['o', 'd'], vraag: ['Je ziet 40 knikkers.'], type: 'stappen', nodig: ['40', '50', '10'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel knikkers zijn blauw?', 'Hoeveel procent is dat?']}, {letter: 'b', bij: 2, vraag: ['Kies het goede woord.']}],
+   velden: [{tpl: 'Blauw: {} knikkers', ans: [20]}, {tpl: '20 is de helft van 40. Dat is {} %', ans: [50]},
+            {lab: 'Geel is … dan 50%', soort: 'keuze', opties: ['kies…', 'meer', 'minder'], ans: 2}, {lab: 'Groen is … dan 10%', soort: 'keuze', opties: ['kies…', 'meer', 'minder'], ans: 1}],
+   hint: ['Tel de blauwe knikkers. Elke kolom heeft 5 knikkers.', '50% van 40 is 20 knikkers.', '10% van 40 is 4 knikkers. Tel de groene knikkers.'],
+   uitleg: ['Er zijn 20 blauwe knikkers. Dat is de helft: 50%.', 'Er zijn 12 gele knikkers. Dat is minder dan 20, dus minder dan 50%.', 'Er zijn 8 groene knikkers. 10% is 4 knikkers. 8 is meer.']},
+  {id: 'bU1', nr: 'U1', deel: '', ctx: 'stickers', dom: DP2, route: ['u'], vraag: ['Milan heeft 300 stickers.', 'Hij geeft 20% aan zijn zusje.', 'Hij geeft 5% aan een vriend.', 'Hoeveel stickers houdt Milan over?'], type: 'stappen', nodig: ['300', '20', '5'],
+   velden: [{tpl: '1% is 300 : 100 = {} stickers', ans: [3]}, {tpl: '20% is {} × 20 = {} stickers', ans: [3, 60]}, {tpl: '5% is {} × 5 = {} stickers', ans: [3, 15]},
+            {tpl: 'Milan houdt {} stickers over', ans: [225]}],
+   hint: ['Reken eerst 1% uit: deel door 100.', 'Doe 1% keer 20 en keer 5.', 'Haal beide van 300 af.'],
+   uitleg: ['1% is 300 : 100 = 3 stickers.', '20% is 3 × 20 = 60. 5% is 3 × 5 = 15.', '300 − 60 − 15 = 225 stickers.']}
+ ]},
+
+ /* =================== LEVEL 3 · § 4.3 Handige percentages =================== */
+ {id: 's3', titel: '§ 4.3 Handige percentages', items: [
+  {id: 'uc', theorie: true, titel: 'Uitleg: handige percentages', ctx: 'uitleg',
+   anim: {soort: 'handig', totaal: 80, eenheid: 'euro'},
+   controle: {vraag: 'Je wilt 25% van 40 euro berekenen. Door welk getal deel je?', opties: ['Door 4', 'Door 25', 'Door 2'], ans: 0, terug: 2}},
+
+  {id: 'c1', nr: '1', deel: '', ctx: 'kaartHandig', dom: DP3, vraag: ['Door welk getal deel je?', 'Vul in.'], type: 'stappen',
+   velden: [{tpl: '50% is de helft. Je deelt door {}', ans: [2]}, {tpl: '25% is een kwart. Je deelt door {}', ans: [4]}, {tpl: 'Bij 20% deel je door {}', ans: [5]}, {tpl: 'Bij 10% deel je door {}', ans: [10]}],
+   hint: ['Hoe vaak past 50% in 100%?', 'Hoe vaak past 25% in 100%? En 20%? En 10%?'], uitleg: ['50% past 2 keer in 100%: delen door 2.', '25% past 4 keer: delen door 4.', '20% past 5 keer: delen door 5.', '10% past 10 keer: delen door 10.']},
+  {id: 'c2', nr: '2', deel: '', ctx: 'kaartHandig2', dom: DP3, vraag: ['Maak de berekeningen af.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['50% van 400 euro']}, {letter: 'b', bij: 1, vraag: ['25% van 600 boeken']}, {letter: 'c', bij: 2, vraag: ['10% van 350 stoelen']}],
+   velden: [{tpl: '400 : {} = {} euro', ans: [2, 200]}, {tpl: '600 : {} = {} boeken', ans: [4, 150]}, {tpl: '350 : {} = {} stoelen', ans: [10, 35]}],
+   hint: ['50%: delen door 2.', '25%: delen door 4.', '10%: delen door 10.'], uitleg: ['a: 400 : 2 = 200 euro', 'b: 600 : 4 = 150 boeken', 'c: 350 : 10 = 35 stoelen']},
+  {id: 'c3', nr: '3', deel: '', ctx: 'kaartHandig2', dom: DP3, vraag: ['Bereken.', 'Let op: er komt soms een kommagetal uit.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['20% van 35 euro']}, {letter: 'b', bij: 1, vraag: ['25% van 18 euro']}],
+   velden: [{tpl: '35 : {} = {} euro', ans: [5, 7]}, {tpl: '18 : {} = {} euro', ans: [4, 4.5]}],
+   hint: ['20%: delen door 5.', '25%: delen door 4. Gebruik de rekenmachine als je wilt.'], uitleg: ['a: 35 : 5 = 7 euro', 'b: 18 : 4 = 4,5 euro']},
+
+  {id: 'cO4', nr: 'O4', deel: '', ctx: 'kaartBreuk', dom: DP3, route: ['o'], vraag: ['Bij elk handig percentage hoort een breuk.', 'Maak de berekeningen af.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['50% van 240 euro']}, {letter: 'b', bij: 1, vraag: ['20% van 250 bekers']}, {letter: 'c', bij: 2, vraag: ['25% van 120 scooters']}, {letter: 'd', bij: 3, vraag: ['10% van 90 kg']}],
+   velden: [{tpl: '50% is [1/2] deel. 240 : {} = {} euro', ans: [2, 120]}, {tpl: '20% is [1/5] deel. 250 : {} = {} bekers', ans: [5, 50]},
+            {tpl: '25% is [1/4] deel. 120 : {} = {} scooters', ans: [4, 30]}, {tpl: '10% is [1/10] deel. 90 : {} = {} kg', ans: [10, 9]}],
+   hint: ['Kijk naar de noemer van de breuk.', 'Door dat getal deel je.'], uitleg: ['a: 240 : 2 = 120 euro', 'b: 250 : 5 = 50 bekers', 'c: 120 : 4 = 30 scooters', 'd: 90 : 10 = 9 kg']},
+  {id: 'c4', nr: '4', deel: '', ctx: 'kaartHandig2', dom: DP3, route: ['d', 'u'], vraag: ['Nu andersom.', 'Vul het handige percentage in.'], type: 'stappen',
+   velden: [{tpl: '12 euro is {} % van 24 euro', ans: [50]}, {tpl: '12 euro is {} % van 120 euro', ans: [10]}, {tpl: '12 euro is {} % van 48 euro', ans: [25]}, {tpl: '8 kg is {} % van 40 kg', ans: [20]}],
+   hint: ['Hoe vaak past het kleine getal in het grote getal?', 'Past het 2 keer? Dan is het 50%. 4 keer is 25%. 5 keer is 20%. 10 keer is 10%.'],
+   uitleg: ['24 : 12 = 2, dus 50%.', '120 : 12 = 10, dus 10%.', '48 : 12 = 4, dus 25%.', '40 : 8 = 5, dus 20%.']},
+  {id: 'c5', nr: '5', deel: '', ctx: 'jas', dom: DP3, route: ['o', 'd'], vraag: ['Yusuf krijgt 10% korting.'], type: 'stappen', nodig: ['120', '10'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel euro korting krijgt Yusuf?']}, {letter: 'b', bij: 1, vraag: ['Hoeveel euro betaalt Yusuf voor de jas?']}],
+   velden: [{tpl: '120 : {} = {} euro korting', ans: [10, 12]}, {tpl: '120 − {} = {} euro', ans: [12, 108]}],
+   hint: ['10%: delen door 10.', 'Korting gaat van de prijs af.'], uitleg: ['a: 120 : 10 = 12 euro korting', 'b: 120 − 12 = 108 euro']},
+  {id: 'cU1', nr: 'U1', deel: '', ctx: 'winkels', dom: DP3, route: ['u'], vraag: ['Twee winkels verkopen dezelfde koptelefoon.', 'Waar is hij het goedkoopst?'], type: 'stappen', nodig: ['80', '25', '70', '10'],
+   velden: [{tpl: 'Winkel A: korting 80 : {} = {} euro', ans: [4, 20]}, {tpl: 'Winkel A: je betaalt {} euro', ans: [60]},
+            {tpl: 'Winkel B: korting 70 : {} = {} euro', ans: [10, 7]}, {tpl: 'Winkel B: je betaalt {} euro', ans: [63]},
+            {lab: 'Het goedkoopst is', soort: 'keuze', opties: ['kies…', 'winkel A', 'winkel B'], ans: 1}],
+   hint: ['25%: delen door 4. 10%: delen door 10.', 'Haal de korting van de prijs af.', 'Vergelijk wat je betaalt, niet de korting.'],
+   uitleg: ['Winkel A: 80 : 4 = 20 euro korting. Je betaalt 60 euro.', 'Winkel B: 70 : 10 = 7 euro korting. Je betaalt 63 euro.', 'Winkel A is het goedkoopst.']}
+ ]},
+
+ /* =================== LEVEL 4 · § 4.4 Procenten en breuken =================== */
+ {id: 's4', titel: '§ 4.4 Procenten en breuken', items: [
+  {id: 'ud', theorie: true, titel: 'Uitleg: van procent naar breuk en terug', ctx: 'uitleg',
+   anim: {soort: 'omzet', p: 20, noemer: 5},
+   controle: {vraag: 'Welke breuk hoort bij 20%?', opties: ['[1/5] deel', '[1/20] deel', '[1/2] deel'], ans: 0, terug: 2}},
+
+  {id: 'd1', nr: '1', deel: '', ctx: 'kaartNaarBreuk', dom: DP4, vraag: ['Schrijf het percentage als breuk.', 'Maak de breuk zo klein mogelijk.', 'Vul de teller en de noemer in.'], type: 'stappen',
+   velden: [{tpl: '20% = {} / 100 = {} / {}', ans: [20, 1, 5]}, {tpl: '60% = {} / 100 = {} / {}', ans: [60, 3, 5]}, {tpl: '25% = {} / 100 = {} / {}', ans: [25, 1, 4]}, {tpl: '90% = {} / 100 = {} / {}', ans: [90, 9, 10]}],
+   hint: ['Procent is per honderd. 20% is 20 / 100.', 'Deel de teller en de noemer door hetzelfde getal.', 'Ga door tot het niet kleiner kan.'],
+   uitleg: ['20% = 20/100 = 1/5', '60% = 60/100 = 3/5', '25% = 25/100 = 1/4', '90% = 90/100 = 9/10']},
+  {id: 'd2', nr: '2', deel: '', ctx: 'kaartNaarProcent', dom: DP4, vraag: ['Schrijf de breuk als percentage.', 'Maak eerst de noemer 100.'], type: 'stappen',
+   velden: [{tpl: '[7/10] = {} / 100 = {} %', ans: [70, 70]}, {tpl: '[1/4] = {} / 100 = {} %', ans: [25, 25]}, {tpl: '[9/20] = {} / 100 = {} %', ans: [45, 45]}],
+   hint: ['10 × 10 = 100. Doe de teller ook keer 10.', '4 × 25 = 100. Doe de teller ook keer 25.', '20 × 5 = 100. Doe de teller ook keer 5.'],
+   uitleg: ['[7/10] = 70/100 = 70%', '[1/4] = 25/100 = 25%', '[9/20] = 45/100 = 45%']},
+  {id: 'd3', nr: '3', deel: '', ctx: 'kaartNaarProcent', dom: DP4, vraag: ['Welk percentage hoort bij [1/5] deel?'], type: 'mk', opties: ['5%', '20%', '25%', '50%'], ans: 1,
+   hint: ['Maak de noemer 100.', '5 × 20 = 100.'], uitleg: ['[1/5] = 20/100', 'Dat is 20%.']},
+
+  {id: 'dO4', nr: 'O4', deel: '', ctx: 'huisdier', dom: DP4, route: ['o'], vraag: ['Van 20 kinderen hebben er 7 een huisdier.'], type: 'stappen', nodig: ['20', '7', '50'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Welk deel van de kinderen heeft een huisdier?']}, {letter: 'b', bij: 1, vraag: ['Hoeveel procent is dat?']},
+           {letter: 'c', bij: 3, vraag: ['Van 50 andere kinderen hebben er 20 een huisdier.', 'Hoeveel procent is dat?']}],
+   velden: [{tpl: '{} / 20 deel', ans: [7]}, {tpl: 'Maak de noemer 100: 20 × 5 = 100. Dus 7 × 5 = {}', ans: [35]}, {tpl: '[7/20] = {} / 100 = {} %', ans: [35, 35]},
+            {tpl: '50 × 2 = 100. Dus 20 × 2 = {}', ans: [40]}, {tpl: 'Dat is {} %', ans: [40]}],
+   hint: ['7 van de 20: de 7 is de teller.', 'Wat je met de noemer doet, doe je ook met de teller.'], uitleg: ['a: 7/20 deel.', 'b: 7/20 = 35/100 = 35%.', 'c: 20/50 = 40/100 = 40%.']},
+  {id: 'd4', nr: '4', deel: '', ctx: 'hockey', dom: DP4, route: ['d', 'u'], vraag: ['In groep A zitten 20 kinderen.', 'In groep B zitten 25 kinderen.'], type: 'stappen', nodig: ['20', '35', '25', '9'],
+   delen: [{letter: 'a', bij: 0, vraag: ['In groep A speelt 35% hockey.', 'Hoeveel kinderen zijn dat?']}, {letter: 'b', bij: 2, vraag: ['In groep B spelen 9 kinderen hockey.', 'Hoeveel procent is dat?']},
+           {letter: 'c', bij: 3, vraag: ['In welke groep is het percentage het grootst?']}],
+   velden: [{tpl: '35% = {} / 100 = {} / 20', ans: [35, 7]}, {tpl: 'Er spelen {} kinderen hockey', ans: [7]}, {tpl: '[9/25] = {} / 100 = {} %', ans: [36, 36]},
+            {lab: 'Het grootst in', soort: 'keuze', opties: ['kies…', 'groep A', 'groep B'], ans: 2}],
+   hint: ['Bij a: deel 35 en 100 allebei door 5.', 'Bij b: 25 × 4 = 100. Doe de teller ook keer 4.', 'Vergelijk de twee percentages.'],
+   uitleg: ['a: 35/100 = 7/20. Er spelen 7 kinderen hockey.', 'b: 9/25 = 36/100 = 36%.', 'c: 36% is meer dan 35%. Groep B.']},
+  {id: 'd5', nr: '5', deel: '', ctx: 'rugzak', dom: DP4, route: ['o', 'd'], vraag: ['Je krijgt 30% korting op de rugzak.', '30% is 3 keer 10%.'], type: 'stappen', nodig: ['60', '30', '10'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Bereken eerst 10% van 60 euro.']}, {letter: 'b', bij: 1, vraag: ['Bereken nu 30% van 60 euro.']}, {letter: 'c', bij: 2, vraag: ['Hoeveel euro betaal je voor de rugzak?']}],
+   velden: [{tpl: '60 : {} = {} euro', ans: [10, 6]}, {tpl: '{} × 3 = {} euro korting', ans: [6, 18]}, {tpl: '60 − {} = {} euro', ans: [18, 42]}],
+   hint: ['10%: delen door 10.', '30% is 3 keer zo veel als 10%.', 'Korting gaat van de prijs af.'], uitleg: ['a: 60 : 10 = 6 euro', 'b: 6 × 3 = 18 euro korting', 'c: 60 − 18 = 42 euro']},
+  {id: 'dU1', nr: 'U1', deel: '', ctx: 'kaartSlim', dom: DP4, route: ['u'], vraag: ['Gebruik een handig percentage.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['70% van 1500 bezoekers']}, {letter: 'b', bij: 2, vraag: ['35% van 140 euro']}],
+   velden: [{tpl: '10% is 1500 : 10 = {}', ans: [150]}, {tpl: '70% is {} × 7 = {} bezoekers', ans: [150, 1050]},
+            {tpl: '1% is 140 : 100 = {}', ans: [1.4]}, {tpl: '35% is {} × 35 = {} euro', ans: [1.4, 49]}],
+   hint: ['70% is 7 keer 10%.', '35% kan niet met 10%. Reken eerst 1% uit.'], uitleg: ['a: 1500 : 10 = 150 en 150 × 7 = 1050 bezoekers', 'b: 140 : 100 = 1,4 en 1,4 × 35 = 49 euro']}
+ ]},
+
+ /* =================== LEVEL 5 · § 4.5 Procenten en aantallen =================== */
+ {id: 's5', titel: '§ 4.5 Procenten en aantallen', items: [
+  {id: 'ue', theorie: true, titel: 'Uitleg: eerst 1 procent', ctx: 'uitleg',
+   anim: {soort: 'eenprocent', totaal: 800, p: 6, eenheid: 'euro'},
+   controle: {vraag: 'Je wilt 7% van 300 euro berekenen. Wat doe je eerst?', opties: ['300 delen door 100', '300 delen door 7', '300 keer 7'], ans: 0, terug: 1}},
+
+  {id: 'e1', nr: '1', deel: '', ctx: 'kaartEen', dom: DP5, vraag: ['Bereken 1%.'], type: 'stappen',
+   velden: [{tpl: '1% van 400 euro is 400 : {} = {} euro', ans: [100, 4]}, {tpl: '1% van 3500 flessen is 3500 : {} = {} flessen', ans: [100, 35]}, {tpl: '1% van 1800 kaartjes is {} : {} = {} kaartjes', ans: [1800, 100, 18]}],
+   hint: ['1% is [1/100] deel.', 'Je deelt door 100.'], uitleg: ['400 : 100 = 4 euro', '3500 : 100 = 35 flessen', '1800 : 100 = 18 kaartjes']},
+  {id: 'e2', nr: '2', deel: '', ctx: 'kaartEen', dom: DP5, vraag: ['Bereken 7% van 500 euro.', 'Reken eerst 1% uit.'], type: 'stappen',
+   velden: [{tpl: '1% is 500 : 100 = {} euro', ans: [5]}, {tpl: '7% is {} × 7 = {} euro', ans: [5, 35]}],
+   hint: ['Deel 500 door 100.', 'Doe de uitkomst keer 7.'], uitleg: ['1% is 500 : 100 = 5 euro.', '7% is 5 × 7 = 35 euro.']},
+  {id: 'e3', nr: '3', deel: '', ctx: 'kaartEen', dom: DP5, vraag: ['Bereken.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['23% van 600 euro']}, {letter: 'b', bij: 2, vraag: ['36% van 150 euro']}],
+   velden: [{tpl: '600 : 100 = {}', ans: [6]}, {tpl: '{} × 23 = {} euro', ans: [6, 138]}, {tpl: '150 : 100 = {}', ans: [1.5]}, {tpl: '{} × 36 = {} euro', ans: [1.5, 54]}],
+   hint: ['Eerst delen door 100.', 'Daarna keer het percentage.', 'Bij b komt er bij 1% een kommagetal uit.'], uitleg: ['a: 600 : 100 = 6 en 6 × 23 = 138 euro', 'b: 150 : 100 = 1,5 en 1,5 × 36 = 54 euro']},
+
+  {id: 'eO4', nr: 'O4', deel: '', ctx: 'kaartEen', dom: DP5, route: ['o'], vraag: ['Reken steeds eerst 1% uit.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel is 4% van 750 euro?']}, {letter: 'b', bij: 2, vraag: ['Hoeveel is 9% van 600 peren?']}],
+   velden: [{tpl: '1% is 750 : 100 = {} euro', ans: [7.5]}, {tpl: '4% is {} × 4 = {} euro', ans: [7.5, 30]}, {tpl: '1% is 600 : 100 = {} peren', ans: [6]}, {tpl: '9% is {} × 9 = {} peren', ans: [6, 54]}],
+   hint: ['Delen door 100: de komma gaat twee plaatsen naar links.', '750 : 100 = 7,5', 'Doe 1% daarna keer het percentage.'], uitleg: ['a: 750 : 100 = 7,5 en 7,5 × 4 = 30 euro', 'b: 600 : 100 = 6 en 6 × 9 = 54 peren']},
+  {id: 'e4', nr: '4', deel: '', ctx: 'camping', dom: DP5, route: ['d', 'u'], vraag: ['16% van de tenten is een grote tent.', 'Hoeveel grote tenten staan er?'], type: 'stappen', nodig: ['650', '16'],
+   velden: [{tpl: '1% is 650 : 100 = {}', ans: [6.5]}, {tpl: '16% is {} × 16 = {} tenten', ans: [6.5, 104]}],
+   hint: ['650 : 100 = 6,5', 'Doe 6,5 keer 16. Gebruik de rekenmachine.'], uitleg: ['1% is 650 : 100 = 6,5.', '16% is 6,5 × 16 = 104 tenten.']},
+  {id: 'e5', nr: '5', deel: '', ctx: 'sport', dom: DP5, route: ['o', 'd'], vraag: ['Jesse krijgt 15% korting.'], type: 'stappen', nodig: ['64', '15'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel euro korting krijgt Jesse?']}, {letter: 'b', bij: 2, vraag: ['Hoeveel euro moet Jesse betalen?']}],
+   velden: [{tpl: '1% is 64 : 100 = {} euro', ans: [0.64]}, {tpl: '15% is {} × 15 = {} euro korting', ans: [0.64, 9.6]}, {tpl: '64 − {} = {} euro', ans: [9.6, 54.4]}],
+   hint: ['64 : 100 = 0,64', '0,64 × 15. Gebruik de rekenmachine.', 'Korting gaat van de prijs af.'], uitleg: ['a: 64 : 100 = 0,64 en 0,64 × 15 = 9,60 euro korting', 'b: 64 − 9,60 = 54,40 euro']},
+  {id: 'eU1', nr: 'U1', deel: '', ctx: 'kaartMeer', dom: DP5, route: ['u'], vraag: ['Bij een prijsverhoging komt er procent bij.', 'Je rekent dan met meer dan 100%.'], type: 'stappen', nodig: ['30', '5', '18', '4'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Een sportschool kost 30 euro per maand.', 'De prijs wordt 5% hoger.', 'Wat is de nieuwe prijs?']},
+           {letter: 'b', bij: 3, vraag: ['Een treinkaartje kost 18 euro.', 'De prijs wordt 4% hoger.', 'Wat is de nieuwe prijs?']}],
+   velden: [{tpl: 'Je betaalt 100% + 5% = {} %', ans: [105]}, {tpl: '1% is 30 : 100 = {} euro', ans: [0.3]}, {tpl: '{} × 105 = {} euro', ans: [0.3, 31.5]},
+            {tpl: 'Je betaalt 100% + 4% = {} %', ans: [104]}, {tpl: '1% is 18 : 100 = {} euro', ans: [0.18]}, {tpl: '{} × 104 = {} euro', ans: [0.18, 18.72]}],
+   hint: ['De oude prijs is 100%. Tel de verhoging erbij.', 'Reken 1% uit.', 'Doe 1% keer het nieuwe percentage.'],
+   uitleg: ['a: 100% + 5% = 105%. 30 : 100 = 0,30. 0,30 × 105 = 31,50 euro.', 'b: 100% + 4% = 104%. 18 : 100 = 0,18. 0,18 × 104 = 18,72 euro.']}
+ ]}
+];
+/* =========================================================
+   KADER (2KB) · eigen levels k1 t/m k5
+   Werkwijze uit het kaderboek: de verhoudingstabel.
+   ========================================================= */
+SECTIES.forEach(s => { if (!s.toets) s.niveau = ['b']; });
+const KD1 = 'Kader · § 4.1 Van aantallen naar procenten', KD2 = 'Kader · § 4.2 Procenten vergelijken', KD3 = 'Kader · § 4.3 Rekenen met procenten', KD4 = 'Kader · § 4.4 Meer dan 100%', KD5 = 'Kader · § 4.5 Terug naar 100%';
+/* vtabel(koppen, bovenste rij, onderste rij) tekent een verhoudingstabel. Gebruik '…' voor een leeg vakje. */
+function vtabel(kop, boven, onder, titel){
+  const cel = c => `<td${c === '…' ? ' class="leeg"' : ''}>${esc(String(c).replace('.', ','))}</td>`;
+  return `<div class="vt-blok">${titel ? `<div class="vt-titel">${esc(titel)}</div>` : ''}<div class="vt-wrap"><table class="vt"><tr><th>${esc(kop[0])}</th>${boven.map(cel).join('')}</tr><tr><th>${esc(kop[1])}</th>${onder.map(cel).join('')}</tr></table></div></div>`;
+}
+const EUR = ["bedrag in euro's", 'procenten'];
+const AANPAK = (regels) => formuleKaart('Aanpak', regels);
+Object.assign(CTX, {
+  ka1: {intro: ['Tim koopt schoenen van € 75.', 'Hij krijgt € 15 korting.'], links: () => vtabel(EUR, [75, 1, 15], [100, '…', '…'])},
+  ka2: {intro: ['Lisa krijgt € 9 korting op een tas van € 36.'], links: () => vtabel(EUR, [36, 1, 9], [100, '…', '…'])},
+  ka3: {intro: ['Een fiets kost € 400.', 'Je krijgt € 60 korting.'], links: () => vtabel(EUR, [400, 1, 60], [100, '…', '…'])},
+  kaO: {intro: ['Een step kost € 250.', 'Je krijgt € 50 korting.'], links: () => vtabel(EUR, [250, 1, 50], [100, '…', '…'])},
+  ka4: {intro: ['Op een school zitten 600 leerlingen.'], links: () => vtabel(['aantal leerlingen', 'procenten'], [600, 1, '…'], [100, '…', '…'])},
+  ka5: {intro: ['Noor betaalt € 42 voor een broek van € 56.'], links: () => vtabel(EUR, [56, 1, '…'], [100, '…', '…'])},
+  kaU: {intro: ['Bram krijgt korting op een voetbal.', 'Hij krijgt € 6 korting.', 'Hij betaalt nog € 24.'], links: () => vtabel(EUR, ['…', 1, 6], [100, '…', '…'])},
+
+  kb1: {intro: ['In klas 2C zitten 25 leerlingen.', '9 leerlingen hebben een huisdier.'], links: () => vtabel(['aantal leerlingen', 'procenten'], [25, 1, 9], [100, '…', '…'])},
+  kb2: {intro: ['Een land wint 19 medailles.', 'Daarvan zijn er 7 van goud.'], links: () => vtabel(['aantal medailles', 'procenten'], [19, 1, 7], [100, '…', '…'])},
+  kb3: {intro: ['In groep A doen 18 van de 24 kinderen mee aan zwemles.', 'In groep B doen 20 van de 32 kinderen mee.'], links: () => vtabel(['aantal kinderen', 'procenten'], [24, 1, 18], [100, '…', '…'], 'Groep A') + vtabel(['aantal kinderen', 'procenten'], [32, 1, 20], [100, '…', '…'], 'Groep B')},
+  kbO: {intro: ['Een tennisclub heeft 200 leden.', '46 leden spelen competitie.'], links: () => vtabel(['aantal leden', 'procenten'], [200, 1, 46], [100, '…', '…'])},
+  kb4: {intro: ['Pot A weegt 400 gram. Er zit 180 gram fruit in.', 'Pot B weegt 250 gram. Er zit 120 gram fruit in.'], links: () => vtabel(['gewicht in gram', 'procenten'], [400, 1, 180], [100, '…', '…'], 'Pot A') + vtabel(['gewicht in gram', 'procenten'], [250, 1, 120], [100, '…', '…'], 'Pot B')},
+  kb5: {intro: ['Winkel A: een jas van € 80 met € 20 korting.', 'Winkel B: een jas van € 120 met € 27 korting.'], links: () => vtabel(EUR, [80, 1, 20], [100, '…', '…'], 'Winkel A') + vtabel(EUR, [120, 1, 27], [100, '…', '…'], 'Winkel B')},
+  kbU: {intro: ['In leerjaar 1 hebben 120 van de 150 leerlingen een voldoende.', 'In leerjaar 2 zitten 180 leerlingen.', 'Het percentage voldoendes is even groot.'], links: () => vtabel(['aantal leerlingen', 'procenten'], [150, 1, 120], [100, '…', '…'], 'Leerjaar 1')},
+
+  kc1: {intro: [], links: () => formuleKaart('Breuk naar procent', ['Deel de teller door de noemer.', 'Doe de uitkomst keer 100.', 'Rond af op één decimaal.'])},
+  kc2: {intro: [], links: () => formuleKaart('Korting', ['Alles is 100%.', 'Je betaalt 100% min de korting.'])},
+  kc3: {intro: ['Een jas kost € 120.', 'Je krijgt 25% korting.'], links: () => vtabel(EUR, [120, '…', '…'], [100, 1, '…'])},
+  kcO: {intro: ['Een skateboard kost € 80.', 'Je krijgt 40% korting.'], links: () => formuleKaart('Handig rekenen', ['10% is delen door 10.', '60% is 6 keer 10%.'])},
+  kc4: {intro: ['Een laptop kost € 650.', 'Je krijgt 15% korting.'], links: () => vtabel(EUR, [650, '…', '…'], [100, 1, '…'])},
+  kc5: {intro: [], links: () => formuleKaart('Breuk naar procent', ['Deel de teller door de noemer.', 'Doe de uitkomst keer 100.'])},
+  kcU: {intro: ['Een bank kost € 200.', 'Eerst krijg je 50% korting.', 'Daarna krijg je nog 20% korting op de nieuwe prijs.', 'Sven zegt: de totale korting is 70%.'], links: () => formuleKaart('Let op', ['De tweede korting gaat van de nieuwe prijs af.'])},
+
+  kd1: {intro: [], links: () => formuleKaart('Meer dan 100%', ['De oude prijs is 100%.', 'Tel de verhoging erbij op.'])},
+  kd2: {intro: ['Een abonnement kost € 30 per maand.', 'Het wordt 4% duurder.'], links: () => vtabel(EUR, [30, '…', '…'], [100, 1, 104])},
+  kd3: {intro: ['Een fiets kost € 600 zonder 21% btw.'], links: () => vtabel(EUR, [600, '…', '…'], [100, 1, 121])},
+  kdO: {intro: ['Een boek kost € 20 zonder 9% btw.'], links: () => vtabel(EUR, [20, '…', '…'], [100, 1, '…'])},
+  kd4: {intro: ['Een festival had 4500 bezoekers.', 'Volgend jaar komen er 12% meer.'], links: () => vtabel(['aantal bezoekers', 'procenten'], [4500, '…', '…'], [100, 1, '…'])},
+  kd5: {intro: ['Knippen bij de kapper kost € 25 zonder 9% btw.'], links: () => vtabel(EUR, [25, '…', '…'], [100, 1, '…'])},
+  kdU: {intro: ['Een reep chocola wordt 15 cent duurder.', 'Dat is een verhoging van 6%.'], links: () => vtabel(['aantal cent', 'procenten'], [15, '…', '…'], [6, 1, 100])},
+
+  ke1: {intro: ['Na een verhoging van 4% kost een kaartje € 26.'], links: () => vtabel(EUR, [26, '…', '…'], [104, 1, 100])},
+  ke2: {intro: ['Een tafel kost € 363 inclusief 21% btw.'], links: () => vtabel(EUR, [363, '…', '…'], [121, 1, 100])},
+  ke3: {intro: ['Een cadeau kost € 43,60 inclusief 9% btw.'], links: () => vtabel(EUR, ['43,60', '…', '…'], [109, 1, 100])},
+  keO: {intro: ['Een stoel kost € 242 inclusief 21% btw.'], links: () => vtabel(EUR, [242, '…', '…'], ['…', 1, 100])},
+  ke4: {intro: ['Bo krijgt 5% loonsverhoging.', 'Nu verdient hij € 12,60 per uur.'], links: () => vtabel(EUR, ['12,60', '…', '…'], [105, 1, 100])},
+  ke5: {intro: ['Een scooter kost € 2420 inclusief 21% btw.'], links: () => vtabel(EUR, [2420, '…', '…'], [121, 1, 100])},
+  keU: {intro: ['Op een kassabon staan twee bedragen, allebei inclusief btw.', 'Een boek van € 32,70 met 9% btw.', 'Een koptelefoon van € 48,40 met 21% btw.'], links: () => formuleKaart('Kassabon', ['boek (9% btw)   € 32,70', 'koptelefoon (21% btw)   € 48,40'])}
+});
+
+SECTIES.push(
+ /* ---------- KADER LEVEL 1 · § 4.1 Van aantallen naar procenten ---------- */
+ {id: 'k1', titel: '§ 4.1 Aantallen naar procenten', niveau: ['k'], items: [
+  {id: 'ka', theorie: true, titel: 'Uitleg: de verhoudingstabel', ctx: 'uitleg', anim: {soort: 'vtab', vb: 'k1'},
+   controle: {vraag: 'Je wilt weten hoeveel procent 9 van 45 is. Welk getal zet je boven 100%?', opties: ['45', '9', '100'], ans: 0, terug: 1}},
+  {id: 'K1-1', nr: '1', deel: '', ctx: 'ka1', dom: KD1, vraag: ['Hoeveel procent korting krijgt Tim?'], type: 'stappen', nodig: ['75', '15'],
+   velden: [{tpl: 'Boven 100% staat {} euro', ans: [75]}, {tpl: '100 : {} × {} = {} %', ans: [75, 15, 20]}],
+   hint: ['Boven 100% staat altijd het totaal: de hele prijs.', 'Ga via 1: deel 100 door 75. Doe dat daarna keer 15.'], uitleg: ['De hele prijs is € 75. Die staat boven 100%.', '100 : 75 × 15 = 20', 'Tim krijgt 20% korting.']},
+  {id: 'K1-2', nr: '2', deel: '', ctx: 'ka2', dom: KD1, vraag: ['Hoeveel procent korting krijgt Lisa?', 'Welke berekening klopt?'], type: 'mk', nodig: ['36', '9'],
+   opties: ['100 : 36 × 9', '100 : 9 × 36', '36 : 100 × 9', '36 × 9 : 100'], ans: 0,
+   hint: ['Je begint bij 100%.', 'Deel door het totaal. Doe daarna keer de korting.'], uitleg: ['Het totaal is € 36. Dat is 100%.', '100 : 36 × 9 = 25', 'Lisa krijgt 25% korting.']},
+  {id: 'K1-3', nr: '3', deel: '', ctx: 'ka3', dom: KD1, vraag: ['Schrijf je berekening op.'], type: 'stappen', nodig: ['400', '60'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel euro betaal je voor de fiets?']}, {letter: 'b', bij: 1, vraag: ['Hoeveel procent korting krijg je?']}],
+   velden: [{tpl: '400 − {} = {} euro', ans: [60, 340]}, {tpl: '100 : {} × {} = {} %', ans: [400, 60, 15]}],
+   hint: ['Bij a: korting gaat van de prijs af.', 'Bij b: de hele prijs is 100%. Ga via 1 naar de korting.'], uitleg: ['a: 400 − 60 = 340 euro', 'b: 100 : 400 × 60 = 15. Je krijgt 15% korting.']},
+  {id: 'K1-O4', nr: 'O4', deel: '', ctx: 'kaO', dom: KD1, route: ['o'], vraag: ['Hoeveel procent korting krijg je?', 'Vul de verhoudingstabel stap voor stap in.'], type: 'stappen', nodig: ['250', '50'],
+   velden: [{tpl: 'Bovenste rij: 250 : 250 = {}', ans: [1]}, {tpl: 'Onderste rij: 100 : 250 = {}', ans: [0.4]}, {tpl: 'Bovenste rij: 1 × 50 = {}', ans: [50]}, {tpl: 'Onderste rij: 0,4 × 50 = {} %', ans: [20]}],
+   hint: ['Wat je boven doet, doe je ook onder.', '100 : 250 = 0,4. Gebruik de rekenmachine.', 'Doe allebei keer 50.'], uitleg: ['250 : 250 = 1 en 100 : 250 = 0,4.', '1 × 50 = 50 en 0,4 × 50 = 20.', 'Je krijgt 20% korting.']},
+  {id: 'K1-4', nr: '4', deel: '', ctx: 'ka4', dom: KD1, route: ['d', 'u'], vraag: ['Schrijf je berekening op.'], type: 'stappen', nodig: ['600', '150', '342'],
+   delen: [{letter: 'a', bij: 0, vraag: ['150 leerlingen gaan met de bus.', 'Hoeveel procent is dat?']}, {letter: 'b', bij: 1, vraag: ['342 leerlingen komen op de fiets.', 'Hoeveel procent is dat?']}],
+   velden: [{tpl: '100 : {} × {} = {} %', ans: [600, 150, 25]}, {tpl: '100 : 600 × {} = {} %', ans: [342, 57]}],
+   hint: ['Alle 600 leerlingen samen zijn 100%.', 'Deel 100 door 600. Doe dat keer het aantal.'], uitleg: ['a: 100 : 600 × 150 = 25%', 'b: 100 : 600 × 342 = 57%']},
+  {id: 'K1-5', nr: '5', deel: '', ctx: 'ka5', dom: KD1, route: ['o', 'd'], vraag: ['Schrijf je berekening op.'], type: 'stappen', nodig: ['56', '42'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel euro korting krijgt Noor?']}, {letter: 'b', bij: 1, vraag: ['Hoeveel procent korting krijgt Noor?']}],
+   velden: [{tpl: '56 − {} = {} euro korting', ans: [42, 14]}, {tpl: '100 : {} × {} = {} %', ans: [56, 14, 25]}],
+   hint: ['Bij a: de oude prijs min wat Noor betaalt.', 'Bij b: de oude prijs is 100%.'], uitleg: ['a: 56 − 42 = 14 euro korting', 'b: 100 : 56 × 14 = 25%']},
+  {id: 'K1-U1', nr: 'U1', deel: '', ctx: 'kaU', dom: KD1, route: ['u'], vraag: ['Schrijf je berekening op.'], type: 'stappen', nodig: ['6', '24'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Wat was de oude prijs van de voetbal?']}, {letter: 'b', bij: 1, vraag: ['Hoeveel procent korting kreeg Bram?']}],
+   velden: [{tpl: '{} + {} = {} euro', ans: [24, 6, 30]}, {tpl: '100 : {} × {} = {} %', ans: [30, 6, 20]}],
+   hint: ['De oude prijs is wat Bram betaalt plus de korting.', 'De oude prijs is 100%.'], uitleg: ['a: 24 + 6 = 30 euro', 'b: 100 : 30 × 6 = 20%']}
+ ]},
+
+ /* ---------- KADER LEVEL 2 · § 4.2 Procenten vergelijken ---------- */
+ {id: 'k2', titel: '§ 4.2 Vergelijken', niveau: ['k'], items: [
+  {id: 'kb', theorie: true, titel: 'Uitleg: vergelijken met procenten', ctx: 'uitleg', anim: {soort: 'vtab', vb: 'k2'},
+   controle: {vraag: 'Club A: 12 van de 40 leden. Club B: 15 van de 60 leden. Waar is het percentage het grootst?', opties: ['Club A (30%)', 'Club B (25%)', 'Even groot'], ans: 0, terug: 1}},
+  {id: 'K2-1', nr: '1', deel: '', ctx: 'kb1', dom: KD2, vraag: ['Hoeveel procent van de leerlingen heeft een huisdier?'], type: 'stappen', nodig: ['25', '9'],
+   velden: [{tpl: '100 : {} × {} = {} %', ans: [25, 9, 36]}],
+   hint: ['Alle 25 leerlingen zijn 100%.', 'Deel 100 door 25. Doe dat keer 9.'], uitleg: ['100 : 25 × 9 = 36', '36% heeft een huisdier.']},
+  {id: 'K2-2', nr: '2', deel: '', ctx: 'kb2', dom: KD2, vraag: ['Hoeveel procent van de medailles is van goud?', 'Rond af op één decimaal.'], type: 'stappen', nodig: ['19', '7'],
+   velden: [{tpl: '100 : 19 × 7 = {} %', ans: [36.8]}],
+   hint: ['Typ 100 : 19 × 7 in de rekenmachine.', 'Er komt 36,842… uit. Eén decimaal: kijk naar het tweede cijfer achter de komma.'], uitleg: ['100 : 19 × 7 = 36,842…', 'Afgerond: 36,8%']},
+  {id: 'K2-3', nr: '3', deel: '', ctx: 'kb3', dom: KD2, vraag: ['In welke groep doen naar verhouding meer kinderen mee?'], type: 'stappen', nodig: ['24', '18', '32', '20'],
+   velden: [{tpl: 'Groep A: 100 : 24 × 18 = {} %', ans: [75]}, {tpl: 'Groep B: 100 : 32 × 20 = {} %', ans: [62.5]}, {lab: 'Naar verhouding meer in', soort: 'keuze', opties: ['kies…', 'groep A', 'groep B'], ans: 1}],
+   hint: ['Reken voor elke groep het percentage uit.', 'Vergelijk de percentages, niet de aantallen.'], uitleg: ['Groep A: 75%', 'Groep B: 62,5%', 'In groep A doen naar verhouding meer kinderen mee.']},
+  {id: 'K2-O4', nr: 'O4', deel: '', ctx: 'kbO', dom: KD2, route: ['o'], vraag: ['Hoeveel procent van de leden speelt competitie?', 'Vul de verhoudingstabel stap voor stap in.'], type: 'stappen', nodig: ['200', '46'],
+   velden: [{tpl: 'Bovenste rij: 200 : 200 = {}', ans: [1]}, {tpl: 'Onderste rij: 100 : 200 = {}', ans: [0.5]}, {tpl: 'Onderste rij: {} × 46 = {} %', ans: [0.5, 23]}],
+   hint: ['Wat je boven doet, doe je ook onder.', '100 : 200 = 0,5'], uitleg: ['100 : 200 = 0,5', '0,5 × 46 = 23', '23% speelt competitie.']},
+  {id: 'K2-4', nr: '4', deel: '', ctx: 'kb4', dom: KD2, route: ['d', 'u'], vraag: ['In welke pot zit naar verhouding meer fruit?'], type: 'stappen', nodig: ['400', '180', '250', '120'],
+   velden: [{tpl: 'Pot A: 100 : {} × {} = {} %', ans: [400, 180, 45]}, {tpl: 'Pot B: 100 : {} × {} = {} %', ans: [250, 120, 48]}, {lab: 'Naar verhouding meer fruit in', soort: 'keuze', opties: ['kies…', 'pot A', 'pot B'], ans: 2}],
+   hint: ['Het gewicht van de hele pot is 100%.', 'Vergelijk de percentages.'], uitleg: ['Pot A: 100 : 400 × 180 = 45%', 'Pot B: 100 : 250 × 120 = 48%', 'In pot B zit naar verhouding meer fruit.']},
+  {id: 'K2-5', nr: '5', deel: '', ctx: 'kb5', dom: KD2, route: ['o', 'd'], vraag: ['Welke winkel geeft het hoogste kortingspercentage?'], type: 'stappen', nodig: ['80', '20', '120', '27'],
+   velden: [{tpl: 'Winkel A: 100 : 80 × 20 = {} %', ans: [25]}, {tpl: 'Winkel B: 100 : 120 × 27 = {} %', ans: [22.5]}, {lab: 'Het hoogste kortingspercentage geeft', soort: 'keuze', opties: ['kies…', 'winkel A', 'winkel B'], ans: 1}],
+   hint: ['De oude prijs is 100%.', 'Winkel B geeft meer euro korting. Is het percentage ook hoger?'], uitleg: ['Winkel A: 25%', 'Winkel B: 22,5%', 'Winkel A geeft het hoogste kortingspercentage.']},
+  {id: 'K2-U1', nr: 'U1', deel: '', ctx: 'kbU', dom: KD2, route: ['u'], vraag: ['Hoeveel leerlingen in leerjaar 2 hebben een onvoldoende?'], type: 'stappen', nodig: ['150', '120', '180'],
+   velden: [{tpl: 'In leerjaar 1 is dat 100 : 150 × 120 = {} %', ans: [80]}, {tpl: 'Voor leerjaar 2 reken je 180 : 100 × {} = {} voldoendes', ans: [80, 144]}, {tpl: '180 − {} = {} onvoldoendes', ans: [144, 36]}],
+   hint: ['Reken eerst het percentage voldoendes uit in leerjaar 1.', 'Gebruik dat percentage voor de 180 leerlingen.', 'Haal de voldoendes van 180 af.'], uitleg: ['Leerjaar 1: 80% voldoende.', 'Voor leerjaar 2: 180 : 100 × 80 = 144 voldoendes.', '180 − 144 = 36 onvoldoendes.']}
+ ]},
+
+ /* ---------- KADER LEVEL 3 · § 4.3 Rekenen met procenten ---------- */
+ {id: 'k3', titel: '§ 4.3 Rekenen met procenten', niveau: ['k'], items: [
+  {id: 'kc', theorie: true, titel: 'Uitleg: breuken en korting', ctx: 'uitleg', anim: {soort: 'vtab', vb: 'k3'},
+   controle: {vraag: 'Je krijgt 25% korting. Hoeveel procent betaal je nog?', opties: ['75%', '25%', '125%'], ans: 0, terug: 2}},
+  {id: 'K3-1', nr: '1', deel: '', ctx: 'kc1', dom: KD3, vraag: ['Schrijf als percentage.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['[5/8] deel']}, {letter: 'b', bij: 2, vraag: ['[2/7] deel', 'Rond af op één decimaal.']}],
+   velden: [{tpl: '5 : 8 = {}', ans: [0.625]}, {tpl: '{} × 100 = {} %', ans: [0.625, 62.5]}, {tpl: '2 : 7 × 100 = {} %', ans: [28.6]}],
+   hint: ['Deel de teller door de noemer.', 'Doe de uitkomst keer 100.', 'Bij b komt er 28,571… uit. Rond af op één decimaal.'], uitleg: ['a: 5 : 8 = 0,625 en 0,625 × 100 = 62,5%', 'b: 2 : 7 × 100 = 28,571… Afgerond: 28,6%']},
+  {id: 'K3-2', nr: '2', deel: '', ctx: 'kc2', dom: KD3, vraag: ['Vul in.'], type: 'stappen',
+   velden: [{tpl: 'Bij 35% korting betaal je 100% − {} % = {} %', ans: [35, 65]}, {tpl: 'Bij 12% korting betaal je {} %', ans: [88]}, {tpl: 'Bij 60% korting betaal je {} %', ans: [40]}],
+   hint: ['Alles is 100%.', 'Haal de korting van 100% af.'], uitleg: ['100% − 35% = 65%', '100% − 12% = 88%', '100% − 60% = 40%']},
+  {id: 'K3-3', nr: '3', deel: '', ctx: 'kc3', dom: KD3, vraag: ['Bereken de nieuwe prijs van de jas.'], type: 'stappen', nodig: ['120', '25'],
+   velden: [{tpl: 'Je betaalt 100% − 25% = {} %', ans: [75]}, {tpl: '120 : 100 × {} = {} euro', ans: [75, 90]}],
+   hint: ['Hoeveel procent betaal je nog?', 'Deel 120 door 100. Doe dat keer het percentage dat je betaalt.'], uitleg: ['Je betaalt 75%.', '120 : 100 × 75 = 90', 'De nieuwe prijs is € 90.']},
+  {id: 'K3-O4', nr: 'O4', deel: '', ctx: 'kcO', dom: KD3, route: ['o'], vraag: ['Bereken de nieuwe prijs van het skateboard.'], type: 'stappen', nodig: ['80', '40'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel procent betaal je nog?']}, {letter: 'b', bij: 1, vraag: ['Bereken de nieuwe prijs met handige percentages.']}],
+   velden: [{tpl: '100% − 40% = {} %', ans: [60]}, {tpl: '10% van 80 is 80 : 10 = {}', ans: [8]}, {tpl: '60% is {} × 6 = {} euro', ans: [8, 48]}],
+   hint: ['Bij a: haal de korting van 100% af.', '10% is delen door 10.', '60% is 6 keer zo veel als 10%.'], uitleg: ['a: 100% − 40% = 60%', 'b: 80 : 10 = 8 en 8 × 6 = 48 euro']},
+  {id: 'K3-4', nr: '4', deel: '', ctx: 'kc4', dom: KD3, route: ['d', 'u'], vraag: ['Bereken de nieuwe prijs van de laptop.'], type: 'stappen', nodig: ['650', '15'],
+   velden: [{tpl: 'Je betaalt 100% − 15% = {} %', ans: [85]}, {tpl: '650 : 100 × {} = {} euro', ans: [85, 552.5]}],
+   hint: ['Hoeveel procent betaal je nog?', 'Deel 650 door 100. Doe dat keer 85.'], uitleg: ['Je betaalt 85%.', '650 : 100 × 85 = 552,5', 'De nieuwe prijs is € 552,50.']},
+  {id: 'K3-5', nr: '5', deel: '', ctx: 'kc5', dom: KD3, route: ['o', 'd'], vraag: ['Schrijf als percentage.'], type: 'stappen',
+   delen: [{letter: 'a', bij: 0, vraag: ['[3/5] deel van de leerlingen komt op de fiets.']}, {letter: 'b', bij: 2, vraag: ['[4/9] deel van de leerlingen komt lopend.', 'Rond af op één decimaal.']}],
+   velden: [{tpl: '3 : 5 = {}', ans: [0.6]}, {tpl: '{} × 100 = {} %', ans: [0.6, 60]}, {tpl: '4 : 9 × 100 = {} %', ans: [44.4]}],
+   hint: ['Deel de teller door de noemer.', 'Doe de uitkomst keer 100.', 'Bij b komt er 44,444… uit.'], uitleg: ['a: 3 : 5 = 0,6 en 0,6 × 100 = 60%', 'b: 4 : 9 × 100 = 44,444… Afgerond: 44,4%']},
+  {id: 'K3-U1', nr: 'U1', deel: '', ctx: 'kcU', dom: KD3, route: ['u'], vraag: ['Heeft Sven gelijk?'], type: 'stappen', nodig: ['200', '50', '20'],
+   velden: [{tpl: 'Na 50% korting: 200 : 100 × 50 = {} euro', ans: [100]}, {tpl: 'Na 20% korting: {} : 100 × 80 = {} euro', ans: [100, 80]},
+            {tpl: 'Totale korting: 200 − 80 = {} euro', ans: [120]}, {tpl: 'Dat is 100 : 200 × 120 = {} %', ans: [60]}, {lab: 'Heeft Sven gelijk?', soort: 'keuze', opties: ['kies…', 'ja', 'nee'], ans: 2}],
+   hint: ['Na de eerste korting betaal je 50%.', 'Bij 20% korting betaal je 80% van de nieuwe prijs.', 'Vergelijk de totale korting met de oude prijs.'], uitleg: ['Na 50% korting: € 100.', 'Na 20% korting: € 80.', 'Totale korting: € 120. Dat is 60%, niet 70%.', 'Sven heeft geen gelijk.']}
+ ]},
+
+ /* ---------- KADER LEVEL 4 · § 4.4 Meer dan 100% ---------- */
+ {id: 'k4', titel: '§ 4.4 Meer dan 100%', niveau: ['k'], items: [
+  {id: 'kd', theorie: true, titel: 'Uitleg: meer dan 100% en btw', ctx: 'uitleg', anim: {soort: 'vtab', vb: 'k4'},
+   controle: {vraag: 'De prijs gaat 6% omhoog. Met welk percentage reken je?', opties: ['106%', '94%', '6%'], ans: 0, terug: 1}},
+  {id: 'K4-1', nr: '1', deel: '', ctx: 'kd1', dom: KD4, vraag: ['Vul in.'], type: 'stappen',
+   velden: [{tpl: 'Bij 40% verhoging betaal je 100% + {} % = {} %', ans: [40, 140]}, {tpl: 'Met 9% btw betaal je 100% + 9% = {} %', ans: [109]}, {tpl: 'Met 21% btw betaal je {} %', ans: [121]}],
+   hint: ['De oude prijs is 100%.', 'Tel de verhoging of de btw erbij op.'], uitleg: ['100% + 40% = 140%', '100% + 9% = 109%', '100% + 21% = 121%']},
+  {id: 'K4-2', nr: '2', deel: '', ctx: 'kd2', dom: KD4, vraag: ['Bereken de nieuwe prijs per maand.'], type: 'stappen', nodig: ['30', '4'],
+   velden: [{tpl: 'Je betaalt 100% + 4% = {} %', ans: [104]}, {tpl: '30 : 100 × {} = {} euro', ans: [104, 31.2]}],
+   hint: ['De oude prijs is 100%. Tel 4% erbij.', 'Deel 30 door 100. Doe dat keer 104.'], uitleg: ['100% + 4% = 104%', '30 : 100 × 104 = 31,2', 'De nieuwe prijs is € 31,20.']},
+  {id: 'K4-3', nr: '3', deel: '', ctx: 'kd3', dom: KD4, vraag: ['Bereken de prijs inclusief btw.'], type: 'stappen', nodig: ['600', '21'],
+   velden: [{tpl: '{} : 100 × 121 = {} euro', ans: [600, 726]}],
+   hint: ['Zonder btw is 100%. Met 21% btw is 121%.', 'Deel 600 door 100. Doe dat keer 121.'], uitleg: ['600 : 100 × 121 = 726', 'De prijs inclusief btw is € 726.']},
+  {id: 'K4-O4', nr: 'O4', deel: '', ctx: 'kdO', dom: KD4, route: ['o'], vraag: ['Bereken de prijs inclusief btw.'], type: 'stappen', nodig: ['20', '9'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Welk percentage hoort bij de prijs inclusief btw?']}, {letter: 'b', bij: 1, vraag: ['Reken eerst 1% uit.']}, {letter: 'c', bij: 2, vraag: ['Bereken de prijs inclusief btw.']}],
+   velden: [{tpl: '100% + 9% = {} %', ans: [109]}, {tpl: '1% is 20 : 100 = {}', ans: [0.2]}, {tpl: '{} × 109 = {} euro', ans: [0.2, 21.8]}],
+   hint: ['Tel 9% bij 100% op.', '20 : 100 = 0,2', 'Doe 0,2 keer 109.'], uitleg: ['a: 109%', 'b: 20 : 100 = 0,2', 'c: 0,2 × 109 = 21,8. Het boek kost € 21,80.']},
+  {id: 'K4-4', nr: '4', deel: '', ctx: 'kd4', dom: KD4, route: ['d', 'u'], vraag: ['Hoeveel bezoekers komen er volgend jaar?'], type: 'stappen', nodig: ['4500', '12'],
+   velden: [{tpl: '100% + 12% = {} %', ans: [112]}, {tpl: '4500 : 100 × {} = {} bezoekers', ans: [112, 5040]}],
+   hint: ['Dit jaar is 100%.', 'Deel 4500 door 100. Doe dat keer 112.'], uitleg: ['100% + 12% = 112%', '4500 : 100 × 112 = 5040 bezoekers']},
+  {id: 'K4-5', nr: '5', deel: '', ctx: 'kd5', dom: KD4, route: ['o', 'd'], vraag: ['Bereken de prijs inclusief btw.'], type: 'stappen', nodig: ['25', '9'],
+   velden: [{tpl: 'Je betaalt 100% + 9% = {} %', ans: [109]}, {tpl: '25 : 100 × {} = {} euro', ans: [109, 27.25]}],
+   hint: ['Tel 9% bij 100% op.', 'Deel 25 door 100. Doe dat keer 109.'], uitleg: ['100% + 9% = 109%', '25 : 100 × 109 = 27,25', 'Knippen kost € 27,25.']},
+  {id: 'K4-U1', nr: 'U1', deel: '', ctx: 'kdU', dom: KD4, route: ['u'], vraag: ['Bereken de oude en de nieuwe prijs van de reep.'], type: 'stappen', nodig: ['15', '6'],
+   velden: [{tpl: '1% is 15 : 6 = {} cent', ans: [2.5]}, {tpl: 'De oude prijs is {} × 100 = {} cent', ans: [2.5, 250]}, {tpl: 'De nieuwe prijs is {} + 15 = {} cent', ans: [250, 265]}],
+   hint: ['15 cent hoort bij 6%.', 'Reken eerst 1% uit. De oude prijs is 100%.', 'Tel de 15 cent bij de oude prijs op.'], uitleg: ['15 : 6 = 2,5 cent is 1%.', '2,5 × 100 = 250 cent. De oude prijs was € 2,50.', '250 + 15 = 265 cent. De nieuwe prijs is € 2,65.']}
+ ]},
+
+ /* ---------- KADER LEVEL 5 · § 4.5 Terug naar 100% ---------- */
+ {id: 'k5', titel: '§ 4.5 Terug naar 100%', niveau: ['k'], items: [
+  {id: 'ke', theorie: true, titel: 'Uitleg: terug naar 100%', ctx: 'uitleg', anim: {soort: 'vtab', vb: 'k5'},
+   controle: {vraag: 'Een broek kost € 54,50 inclusief 9% btw. Welk percentage hoort bij € 54,50?', opties: ['109%', '100%', '91%'], ans: 0, terug: 1}},
+  {id: 'K5-1', nr: '1', deel: '', ctx: 'ke1', dom: KD5, vraag: ['Wat kostte het kaartje voor de verhoging?'], type: 'stappen', nodig: ['26', '4'],
+   velden: [{tpl: 'Bij € 26 hoort 100% + 4% = {} %', ans: [104]}, {tpl: '26 : {} × 100 = {} euro', ans: [104, 25]}],
+   hint: ['Na de verhoging is het 104%.', 'Deel door 104. Doe dat keer 100.'], uitleg: ['€ 26 is 104%.', '26 : 104 × 100 = 25', 'Het kaartje kostte € 25.']},
+  {id: 'K5-2', nr: '2', deel: '', ctx: 'ke2', dom: KD5, vraag: ['Bereken de prijs exclusief btw.'], type: 'stappen', nodig: ['363', '21'],
+   velden: [{tpl: '363 : 121 × 100 = {} euro', ans: [300]}],
+   hint: ['Inclusief 21% btw is 121%.', 'Deel door 121. Doe dat keer 100.'], uitleg: ['363 : 121 × 100 = 300', 'De prijs exclusief btw is € 300.']},
+  {id: 'K5-3', nr: '3', deel: '', ctx: 'ke3', dom: KD5, vraag: ['Schrijf je berekening op.'], type: 'stappen', nodig: ['43,60', '9'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Bereken de prijs exclusief btw.']}, {letter: 'b', bij: 1, vraag: ['Hoeveel euro btw zit er in de prijs?']}],
+   velden: [{tpl: '43,60 : 109 × 100 = {} euro', ans: [40]}, {tpl: '43,60 − {} = {} euro btw', ans: [40, 3.6]}],
+   hint: ['Inclusief 9% btw is 109%.', 'De btw is de prijs inclusief min de prijs exclusief.'], uitleg: ['a: 43,60 : 109 × 100 = 40 euro', 'b: 43,60 − 40 = 3,60 euro btw']},
+  {id: 'K5-O4', nr: 'O4', deel: '', ctx: 'keO', dom: KD5, route: ['o'], vraag: ['Bereken de prijs exclusief btw.', 'Vul elke regel in.'], type: 'stappen', nodig: ['242', '21'],
+   velden: [{tpl: 'Bij € 242 hoort 100% + 21% = {} %', ans: [121]}, {tpl: '1% is 242 : 121 = {}', ans: [2]}, {tpl: '100% is {} × 100 = {} euro', ans: [2, 200]}],
+   hint: ['Inclusief btw is meer dan 100%.', 'Deel 242 door 121.', 'Doe 1% keer 100.'], uitleg: ['€ 242 is 121%.', '242 : 121 = 2', '2 × 100 = 200. De prijs exclusief btw is € 200.']},
+  {id: 'K5-4', nr: '4', deel: '', ctx: 'ke4', dom: KD5, route: ['d', 'u'], vraag: ['Schrijf je berekening op.'], type: 'stappen', nodig: ['12,60', '5'],
+   delen: [{letter: 'a', bij: 0, vraag: ['Hoeveel verdiende Bo per uur voor de verhoging?']}, {letter: 'b', bij: 1, vraag: ['Met hoeveel euro is zijn uurloon omhoog gegaan?']}],
+   velden: [{tpl: '12,60 : {} × 100 = {} euro', ans: [105, 12]}, {tpl: '12,60 − {} = {} euro', ans: [12, 0.6]}],
+   hint: ['Na de verhoging is het 105%.', 'De verhoging is het nieuwe loon min het oude loon.'], uitleg: ['a: 12,60 : 105 × 100 = 12 euro', 'b: 12,60 − 12 = 0,60 euro']},
+  {id: 'K5-5', nr: '5', deel: '', ctx: 'ke5', dom: KD5, route: ['o', 'd'], vraag: ['Hoeveel euro btw zit er in de prijs van de scooter?'], type: 'stappen', nodig: ['2420', '21'],
+   velden: [{tpl: '2420 : 121 × 100 = {} euro', ans: [2000]}, {tpl: '2420 − {} = {} euro btw', ans: [2000, 420]}],
+   hint: ['Reken eerst de prijs exclusief btw uit.', 'Haal die van de prijs inclusief btw af.'], uitleg: ['2420 : 121 × 100 = 2000 euro exclusief btw.', '2420 − 2000 = 420 euro btw.']},
+  {id: 'K5-U1', nr: 'U1', deel: '', ctx: 'keU', dom: KD5, route: ['u'], vraag: ['Hoeveel euro btw staat er in totaal op de kassabon?'], type: 'stappen', nodig: ['32,70', '9', '48,40', '21'],
+   velden: [{tpl: 'Boek: 32,70 : 109 × 100 = {} euro', ans: [30]}, {tpl: 'Btw op het boek: 32,70 − 30 = {} euro', ans: [2.7]},
+            {tpl: 'Koptelefoon: 48,40 : 121 × 100 = {} euro', ans: [40]}, {tpl: 'Btw op de koptelefoon: 48,40 − 40 = {} euro', ans: [8.4]}, {tpl: 'Btw samen: {} euro', ans: [11.1]}],
+   hint: ['Elk artikel heeft een ander btw-percentage.', 'Reken voor elk artikel de prijs exclusief btw uit.', 'Tel de twee btw-bedragen op.'], uitleg: ['Boek: € 30 exclusief, dus € 2,70 btw.', 'Koptelefoon: € 40 exclusief, dus € 8,40 btw.', 'Samen: 2,70 + 8,40 = 11,10 euro btw.']}
+ ]}
+);
+
+/* ---------- oefentoets: dezelfde vragen, maar in toetsmodus ---------- */
+/* ---------- eindtoets: eigen vragen, één poging, geen hints, met een cijfer ----------
+   Deze vragen staan alleen in de toets. Zet nieuwe toetsvragen in TOETS_BRON en hun id in TOETS_IDS. */
+const DT = 'Procenten · eindtoets';
+CTX.t0 = {intro: [], links: () => ''};
+CTX.tfiets = {intro: ['In de stalling van een school staan 240 fietsen.'], links: () => ''};
+CTX.trooster = {intro: ['Het vierkant heeft 100 hokjes.'], links: () => rooster(10, 10, [{n: 35, kleur: 'paars'}, {n: 20, kleur: 'geel'}])};
+const TOETS_BRON = [
+  {id: 't1', nr: '1', deel: '', ctx: 't0', dom: DT, vraag: ['Bereken [1/6] deel van 54.'], type: 'num', ans: 9, hint: [], uitleg: ['54 : 6 = 9']},
+  {id: 't2', nr: '2', deel: '', ctx: 't0', dom: DT, vraag: ['Bereken [3/5] deel van 45.'], type: 'num', ans: 27, hint: [], uitleg: ['45 : 5 = 9', '9 × 3 = 27']},
+  {id: 't3', nr: '3', deel: '', ctx: 'tfiets', dom: DT, vraag: ['[3/8] deel van de fietsen is een elektrische fiets.', 'Hoeveel elektrische fietsen staan er in de stalling?'], type: 'num', ans: 90, eenheid: 'fietsen', hint: [], uitleg: ['240 : 8 = 30', '30 × 3 = 90', 'Er staan 90 elektrische fietsen.']},
+  {id: 't4', nr: '4', deel: '', ctx: 'trooster', dom: DT, vraag: ['Hoeveel procent van de hokjes is paars?'], type: 'num', ans: 35, eenheid: '%', geenBerekening: true, hint: [], uitleg: ['Er zijn 35 hokjes paars.', '35 van de 100 is 35%.']},
+  {id: 't5', nr: '5', deel: '', ctx: 'trooster', dom: DT, vraag: ['Hoeveel procent van de hokjes is niet gekleurd?'], type: 'num', ans: 45, eenheid: '%', hint: [], uitleg: ['Paars is 35% en geel is 20%.', '100 − 35 − 20 = 45', '45% is niet gekleurd.']},
+  {id: 't6', nr: '6', deel: '', ctx: 't0', dom: DT, vraag: ['Welk deel is 1%?'], type: 'mk', opties: ['[1/100] deel', '[1/10] deel', '[1/2] deel'], ans: 0, hint: [], uitleg: ['Procent betekent per honderd.', '1% is [1/100] deel.']},
+  {id: 't7', nr: '7', deel: '', ctx: 't0', dom: DT, vraag: ['Bereken 25% van 240 euro.'], type: 'num', ans: 60, eenheid: 'euro', hint: [], uitleg: ['25%: delen door 4.', '240 : 4 = 60 euro']},
+  {id: 't8', nr: '8', deel: '', ctx: 't0', dom: DT, vraag: ['Bereken 10% van 370 kg.'], type: 'num', ans: 37, eenheid: 'kg', hint: [], uitleg: ['10%: delen door 10.', '370 : 10 = 37 kg']},
+  {id: 't9', nr: '9', deel: '', ctx: 't0', dom: DT, vraag: ['Een fiets kost 250 euro.', 'Je krijgt 20% korting.', 'Hoeveel euro betaal je voor de fiets?'], type: 'num', ans: 200, eenheid: 'euro', hint: [], uitleg: ['20%: delen door 5.', '250 : 5 = 50 euro korting', '250 − 50 = 200 euro'], fouten: {50: 'De korting ingevuld in plaats van wat je betaalt'}},
+  {id: 't10', nr: '10', deel: '', ctx: 't0', dom: DT, vraag: ['Welke breuk hoort bij 40%?'], type: 'mk', opties: ['[2/5] deel', '[4/100] deel', '[1/4] deel', '[4/5] deel'], ans: 0, hint: [], uitleg: ['40% = 40/100', '40/100 = 2/5']},
+  {id: 't11', nr: '11', deel: '', ctx: 't0', dom: DT, vraag: ['Schrijf [3/20] als percentage.'], type: 'num', ans: 15, eenheid: '%', hint: [], uitleg: ['20 × 5 = 100', '3 × 5 = 15', '[3/20] = 15/100 = 15%']},
+  {id: 't12', nr: '12', deel: '', ctx: 't0', dom: DT, vraag: ['Bereken 30% van 400 leerlingen.'], type: 'num', ans: 120, eenheid: 'leerlingen', hint: [], uitleg: ['10% is 400 : 10 = 40.', '30% is 40 × 3 = 120 leerlingen.']},
+  {id: 't13', nr: '13', deel: '', ctx: 't0', dom: DT, vraag: ['Bereken 1% van 700 euro.'], type: 'num', ans: 7, eenheid: 'euro', hint: [], uitleg: ['700 : 100 = 7 euro']},
+  {id: 't14', nr: '14', deel: '', ctx: 't0', dom: DT, vraag: ['Bereken 8% van 450 euro.'], type: 'num', ans: 36, eenheid: 'euro', hint: [], uitleg: ['1% is 450 : 100 = 4,5.', '8% is 4,5 × 8 = 36 euro.']},
+  {id: 't15', nr: '15', deel: '', ctx: 't0', dom: DT, vraag: ['Een laptop kost 500 euro.', 'Je krijgt 12% korting.', 'Hoeveel euro betaal je voor de laptop?'], type: 'num', ans: 440, eenheid: 'euro', hint: [], uitleg: ['1% is 500 : 100 = 5.', '12% is 5 × 12 = 60 euro korting.', '500 − 60 = 440 euro'], fouten: {60: 'De korting ingevuld in plaats van wat je betaalt'}}
+];
+/* ---------- eindtoets kader ---------- */
+TOETS_BRON.forEach(t => { t.niveau = ['b']; });
+const KT = 'Kader · eindtoets';
+TOETS_BRON.push(
+  {id: 'kt1', nr: '1', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Je krijgt € 18 korting op een jas van € 90.', 'Hoeveel procent korting krijg je?'], type: 'num', ans: 20, eenheid: '%', hint: [], uitleg: ['100 : 90 × 18 = 20', 'Je krijgt 20% korting.']},
+  {id: 'kt2', nr: '2', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Op een school zitten 250 leerlingen.', '85 leerlingen gaan met de bus.', 'Hoeveel procent is dat?'], type: 'num', ans: 34, eenheid: '%', hint: [], uitleg: ['100 : 250 × 85 = 34', '34% gaat met de bus.']},
+  {id: 'kt3', nr: '3', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Een tablet kostte € 320.', 'Nu betaal je € 256.', 'Hoeveel procent korting krijg je?'], type: 'num', ans: 20, eenheid: '%', hint: [], uitleg: ['Korting: 320 − 256 = 64 euro.', '100 : 320 × 64 = 20', 'Je krijgt 20% korting.'], fouten: {80: 'Het percentage dat je betaalt in plaats van de korting'}},
+  {id: 'kt4', nr: '4', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['In groep A sporten 14 van de 35 kinderen.', 'In groep B sporten 18 van de 40 kinderen.', 'In welke groep sporten naar verhouding de meeste kinderen?'], type: 'mk', opties: ['Groep A', 'Groep B', 'Even veel'], ans: 1, hint: [], uitleg: ['Groep A: 100 : 35 × 14 = 40%', 'Groep B: 100 : 40 × 18 = 45%', 'Groep B.']},
+  {id: 'kt5', nr: '5', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['In een klas fietsen 6 van de 22 leerlingen naar school.', 'Hoeveel procent is dat?', 'Rond af op één decimaal.'], type: 'num', ans: 27.3, eenheid: '%', hint: [], uitleg: ['100 : 22 × 6 = 27,27…', 'Afgerond: 27,3%']},
+  {id: 'kt6', nr: '6', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Een club heeft 160 leden.', '48 leden spelen competitie.', 'Hoeveel procent is dat?'], type: 'num', ans: 30, eenheid: '%', hint: [], uitleg: ['100 : 160 × 48 = 30', '30% speelt competitie.']},
+  {id: 'kt7', nr: '7', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Schrijf [7/8] deel als percentage.'], type: 'num', ans: 87.5, eenheid: '%', hint: [], uitleg: ['7 : 8 = 0,875', '0,875 × 100 = 87,5%']},
+  {id: 'kt8', nr: '8', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Schoenen kosten € 90.', 'Je krijgt 35% korting.', 'Bereken de nieuwe prijs.'], type: 'num', ans: 58.5, eenheid: 'euro', hint: [], uitleg: ['Je betaalt 100% − 35% = 65%.', '90 : 100 × 65 = 58,5', 'De nieuwe prijs is € 58,50.'], fouten: {31.5: 'De korting ingevuld in plaats van de nieuwe prijs'}},
+  {id: 'kt9', nr: '9', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Je krijgt 18% korting.', 'Hoeveel procent betaal je nog?'], type: 'mk', opties: ['82%', '18%', '118%', '92%'], ans: 0, hint: [], uitleg: ['100% − 18% = 82%']},
+  {id: 'kt10', nr: '10', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Een printer kost € 150 zonder 21% btw.', 'Bereken de prijs inclusief btw.'], type: 'num', ans: 181.5, eenheid: 'euro', hint: [], uitleg: ['100% + 21% = 121%', '150 : 100 × 121 = 181,5', 'De prijs is € 181,50.']},
+  {id: 'kt11', nr: '11', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Een kaartje kost € 40.', 'De prijs wordt 5% hoger.', 'Bereken de nieuwe prijs.'], type: 'num', ans: 42, eenheid: 'euro', hint: [], uitleg: ['100% + 5% = 105%', '40 : 100 × 105 = 42', 'De nieuwe prijs is € 42.']},
+  {id: 'kt12', nr: '12', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Er komt 9% btw bij de prijs.', 'Met welk percentage reken je?'], type: 'mk', opties: ['109%', '91%', '9%', '190%'], ans: 0, hint: [], uitleg: ['100% + 9% = 109%']},
+  {id: 'kt13', nr: '13', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Een lamp kost € 96,80 inclusief 21% btw.', 'Bereken de prijs exclusief btw.'], type: 'num', ans: 80, eenheid: 'euro', hint: [], uitleg: ['96,80 : 121 × 100 = 80', 'De prijs exclusief btw is € 80.']},
+  {id: 'kt14', nr: '14', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Na een verhoging van 3% kost een abonnement € 20,60.', 'Wat kostte het abonnement voor de verhoging?'], type: 'num', ans: 20, eenheid: 'euro', hint: [], uitleg: ['€ 20,60 is 103%.', '20,60 : 103 × 100 = 20', 'Het kostte € 20.']},
+  {id: 'kt15', nr: '15', deel: '', ctx: 't0', dom: KT, niveau: ['k'], vraag: ['Een bank kost € 545 inclusief 9% btw.', 'Hoeveel euro btw zit er in de prijs?'], type: 'num', ans: 45, eenheid: 'euro', hint: [], uitleg: ['545 : 109 × 100 = 500 euro exclusief btw.', '545 − 500 = 45 euro btw.'], fouten: {500: 'De prijs exclusief btw ingevuld in plaats van de btw'}}
+);
+const TOETS_IDS = TOETS_BRON.map(t => t.id);
+(() => { if (!TOETS_IDS.length) return; const alle = SECTIES.flatMap(s => s.items).concat(TOETS_BRON);
+  SECTIES.push({id: 'toets', titel: 'Eindtoets', toets: true, items: TOETS_IDS.map(id => { const o = alle.find(i => i.id === id);
+    return Object.assign({}, o, {id: 'T' + id, toets: true, bron: o.bron && o.bron.map(b => typeof b === 'string' ? (TOETS_IDS.includes(b) ? 'T' + b : b) : b)}); })}); })();
+const ITEMS = []; SECTIES.forEach(s => s.items.forEach(it => { it.sectie = s.id; ITEMS.push(it); }));
+const VRAGEN = ITEMS.filter(i => !i.theorie && !i.toets);
+const TOETSVRAGEN = ITEMS.filter(i => i.toets);
+
+/* =========================================================
+   TOESTAND
+   ========================================================= */
+const OPSLAG = 'procenten-h4-v6';
+let S = laad() || {naam: '', klas: '', start: new Date().toISOString(), huidig: 0, items: {}, gestart: false, klaar: false};
+// bij het openen altijd eerst het startscherm: zo gaat op een gedeelde computer niemand per ongeluk verder in het werk van een ander
+S.gestart = false;
+function laad(){ try { return JSON.parse(localStorage.getItem(OPSLAG)); } catch (e) { return null; } }
+function bewaar(){ S.module = (window.APP_CONFIG || {}).MODULE || null; try { localStorage.setItem(OPSLAG, JSON.stringify(S)); } catch (e) {} wolkLater(); }
+/* ---------- online opslaan met een persoonlijke code ---------- */
+let DB = null;
+function db(){ const c = window.APP_CONFIG || {}; if (!DB && c.SUPABASE_URL && c.SUPABASE_ANON_KEY && window.supabase) DB = window.supabase.createClient(c.SUPABASE_URL, c.SUPABASE_ANON_KEY); return DB; }
+function nieuweCode(){
+  const abc = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; const r = new Uint32Array(8); crypto.getRandomValues(r);
+  const t = Array.from(r, x => abc[x % abc.length]).join(''); return t.slice(0, 4) + '-' + t.slice(4);
+}
+function normCode(c){ const t = String(c || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); return t.length === 8 ? t.slice(0, 4) + '-' + t.slice(4) : ''; }
+let wolkTimer = null, wolkStatus = '';
+function zetWolkStatus(t){ wolkStatus = t; const e = document.getElementById('wolk'); if (e) e.textContent = t; }
+function wolkLater(){ if (!S.code || !db()) return; clearTimeout(wolkTimer); zetWolkStatus('Opslaan…'); wolkTimer = setTimeout(wolkNu, 1200); }
+async function wolkNu(){
+  clearTimeout(wolkTimer); if (!S.code || !db()) return;
+  try {
+    const {error} = await db().rpc('voortgang_opslaan', {p_code: S.code, p_leerling: S.naam || 'onbekend', p_klas: S.klas || null, p_data: S});
+    if (error) throw error; zetWolkStatus('✓ Opgeslagen');
+  } catch (e) { zetWolkStatus('⚠ Niet opgeslagen (geen internet?)'); }
+}
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') wolkNu(); });
+function st(id){ if (!S.items[id]) S.items[id] = {pogingen: [], hint: 0, opgelost: false, punten: null, tijd: 0, gezien: null, laatste: null, hulpGetoond: false, invoer: null};
+  const x = S.items[id]; if (!x.label){ const it = ITEMS.find(i => i.id === id); if (it){ x.label = (it.toets ? 'Toets ' : '') + (it.nr === 'Leerdoelen' ? 'Leerdoelen ' : '') + (it.nr !== 'Leerdoelen' ? it.nr : '') + (it.deel ? ' ' + it.deel : ''); x.vraag = (it.vraag || []).filter(v => !v.startsWith('F:')).join(' ').slice(0, 140); x.toets = !!it.toets; x.volg = ITEMS.indexOf(it); } }
+  return x; }
+function puntenVan(s){ if (!s.opgelost) return 0; if ('toetsGoed' in s) return s.toetsGoed ? 2 : 0; const fouten = s.pogingen.filter(p => !p.goed).length; if (fouten === 0 && !s.hint) return 2; if (fouten <= 1) return 1; return 0; }
+
+/* =========================================================
+   WEERGAVE
+   ========================================================= */
+const app = $('#app');
+function render(){
+  stopLezen();
+  if (!S.gestart) return startScherm();
+  if (!S.code && db()){ S.code = nieuweCode(); bewaar(); }
+  if (S.klaar) return eindScherm();
+  if (S.toetsScherm) return toetsScherm();
+  const it = ITEMS[S.huidig];
+  const sec = SECTIES.find(s => s.id === it.sectie);
+  app.innerHTML = `
+  <header>
+    <h1>2BB/2KB H4 Procenten</h1>
+    <nav class="tabs" aria-label="Paragrafen">${SECTIES.map(s => `<button class="tab ${s.toets ? 'toets' : ''} ${s.id === sec.id ? 'actief' : ''}" data-sec="${s.id}">${esc(s.titel)}</button>`).join('')}</nav>
+    <div class="kop-rechts"><button class="knop-klein rm-knop" id="rmOpen" aria-pressed="${!$('#rm').hidden}">🧮 Rekenmachine</button><span class="naam">${esc(S.naam)}</span>${S.code ? `<button class="knop-klein" id="codeKnop" style="background:rgba(255,255,255,.15)" title="Jouw code om later verder te gaan">Code: ${esc(S.code)}</button><span id="wolk" style="font-size:12px;opacity:.85">${esc(wolkStatus)}</span>` : ''}<button class="knop-klein" id="naarEind">Afronden</button></div>
+  </header>
+  <div>
+    <div class="strook" id="strook">${sec.items.map(i => {
+      const idx = ITEMS.indexOf(i);
+      if (i.theorie) return `<button class="stip theorie ${idx === S.huidig ? 'huidig' : ''}" data-i="${idx}" title="Theorie: ${esc(i.titel)}">▶ Uitleg</button>`;
+      const s = S.items[i.id]; let k = '';
+      if (s && s.opgelost) k = (i.toets && !S.toetsKlaar) ? 'ingeleverd' : 'goed' + puntenVan(s); else if (s && s.pogingen.length) k = 'bezig';
+      return `<button class="stip ${k} ${idx === S.huidig ? 'huidig' : ''}" data-i="${idx}" title="Opdracht ${esc(i.nr)} ${esc(i.deel)}">${esc(i.nr)}${esc(i.deel ? ' ' + i.deel : '')}</button>`;
+    }).join('')}</div>
+  </div>
+  <main id="main"></main>
+  <footer>
+    <button class="knop licht" id="vorige" ${S.huidig === 0 ? 'disabled' : ''}>← Vorige</button>
+    <span class="spacer"></span>
+    <span class="voortgang">${it.toets ? `${TOETSVRAGEN.filter(v => S.items[v.id] && S.items[v.id].opgelost).length} van ${TOETSVRAGEN.length} toetsvragen gemaakt` : `${VRAGEN.filter(v => S.items[v.id] && S.items[v.id].opgelost).length} van ${VRAGEN.length} opdrachten af`}</span>
+    <span class="spacer"></span>
+    <button class="knop paars" id="volgende">${it.toets && it === TOETSVRAGEN[TOETSVRAGEN.length - 1] ? (S.toetsKlaar ? 'Naar de uitslag →' : 'Toets inleveren →') : S.huidig === ITEMS.length - 1 ? 'Naar resultaten →' : (it.theorie ? 'Naar de opdracht →' : 'Volgende / overslaan →')}</button>
+  </footer>`;
+  app.querySelectorAll('.tab').forEach(b => b.onclick = () => { const s = SECTIES.find(x => x.id === b.dataset.sec); ga(ITEMS.indexOf(s.items[0])); });
+  app.querySelectorAll('.stip').forEach(b => b.onclick = () => ga(+b.dataset.i));
+  $('#vorige').onclick = () => ga(S.huidig - 1);
+  $('#volgende').onclick = () => it.toets && it === TOETSVRAGEN[TOETSVRAGEN.length - 1] ? toetsInleveren() : S.huidig === ITEMS.length - 1 ? afronden() : ga(S.huidig + 1);
+  $('#naarEind').onclick = afronden;
+  $('#rmOpen').onclick = () => rmToggle();
+  const ck = $('#codeKnop'); if (ck) ck.onclick = () => toonCode(false);
+  const cur = app.querySelector('.stip.huidig'); if (cur) cur.scrollIntoView({block: 'nearest', inline: 'center'});
+  it.theorie ? toonTheorie(it) : toonVraag(it);
+}
+function ga(i){ if (i < 0 || i >= ITEMS.length) return; S.huidig = i; bewaar(); render(); window.scrollTo(0, 0); }
+
+function toonTheorie(it){
+  $('#main').innerHTML = `
+   <section class="links"><video controls preload="metadata" playsinline src="${it.video}" aria-label="Animatie: ${esc(it.titel)}"></video>
+     <div class="graf-uitleg">Zet je geluid aan. Je kunt het filmpje zo vaak bekijken als je wilt.</div></section>
+   <section class="rechts">
+     <span class="label-domein">Theorie</span>
+     <div class="opdr-nr"><span>${esc(it.titel)}</span></div>
+     ${leesKnoppen()}
+     <div class="theorie-tekst">${it.tekst.map(t => `<span class="zin">${t}</span>`).join('')}</div>
+     <p>Bekijk eerst het filmpje.<br>Klik daarna op <b>Naar de opdracht</b>.</p>
+   </section>`;
+}
+
+function toonVraag(it){
+  const s = st(it.id); if (!s.gezien) s.gezien = nu(); s.laatste = nu(); bewaar();
+  const ctx = CTX[it.ctx];
+  $('#main').innerHTML = `
+   <section class="links" id="links"></section>
+   <section class="rechts">
+     <span class="label-domein">${esc(it.dom)}</span>
+     <div class="opdr-nr"><b>${esc(it.nr)}</b><span>${esc(it.deel)}</span></div>
+     ${leesKnoppen()}
+     <div class="blok">${zinnen(ctx.intro)}</div>
+     <div class="witregel"></div>
+     ${it.toets && !S.toetsKlaar ? '<div class="toets-let">Eindtoets: je hebt één poging en er zijn geen hints.</div>' : ''}
+     <div class="blok vraag">${zinnen(it.vraag)}</div>
+     <div id="invoer"></div>
+     <div class="knoppen">
+       <button class="knop hoofd" id="controleer">Controleer</button>
+       <button class="knop licht" id="hintKnop">💡 Hint</button>
+     </div>
+     <div class="hintvak" id="hintvak"></div>
+     <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+     <div class="berekeningen" id="berekeningen"></div>
+     <div class="pogingen" id="pogingen"></div>
+   </section>`;
+  // linkerkant
+  const links = $('#links');
+  $('#main').classList.toggle('groot', it.type === 'grafiek' || !!it.graf || !!ctx.graf);
+  $('#main').classList.toggle('werk', it.type === 'grafiek');
+  if (it.type === 'grafiek'){
+    s.invoer = s.invoer || [];
+    const toetsFout = it.toets && S.toetsKlaar && s.opgelost && !s.toetsGoed;
+    let gumAan = false;
+    const svg = maakGrafiek(it.g, {interactief: true, punt: () => s.invoer, slot: () => s.opgelost, bijWijziging: bewaar,
+      gum: () => gumAan, melding: t => { const m = document.getElementById('puntMelding'); if (m) m.textContent = t; }, volgorde: it.volgorde,
+      lijnen: (it.vast || []).concat(toetsFout ? [it.pts ? {pts: it.pts, kleur: '#16965A'} : {f: it.f, kleur: '#16965A'}] : []),
+      kleurPunt: (x, y) => s.opgelost && (!it.toets || (S.toetsKlaar && s.toetsGoed)) ? '#16965A' : '#5E0696'});
+    links.appendChild(svg);
+    links.insertAdjacentHTML('beforeend', `<div class="graf-uitleg">Klik op het rooster om een punt te zetten.<br>Verkeerd punt? Klik op de gum en dan op dat punt.</div>
+      <div class="graf-uitleg" id="puntMelding" role="status"></div>
+      <div class="graf-knoppen">
+        <button class="knop licht gum" id="gum" type="button" aria-pressed="false" title="Gum: haal één punt weg"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path class="vul" d="M16.2 3.6a2 2 0 0 1 2.8 0l3.4 3.4a2 2 0 0 1 0 2.8L12 20.2H7.4L2.6 15.4a2 2 0 0 1 0-2.8z" fill="#E924D5"/><path d="M9 9.2l6.2 6.2" stroke="#5E0696" stroke-width="2"/><path d="M13 20.2h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span>Gum</span></button>
+        <button class="knop licht" id="wis" type="button">Alles wissen</button>
+      </div>`);
+    const zetGum = aan => { gumAan = aan; const g = $('#gum'); g.setAttribute('aria-pressed', aan); g.querySelector('span').textContent = aan ? 'Gum aan' : 'Gum'; svg.classList.toggle('gum-aan', aan);
+      $('#puntMelding').textContent = aan ? 'De gum staat aan. Klik op het punt dat weg moet.' : ''; };
+    $('#gum').onclick = () => { if (s.opgelost) return; zetGum(!gumAan); };
+    $('#wis').onclick = () => { if (s.opgelost) return; s.invoer.length = 0; svg._teken(); bewaar(); zetGum(false); };
+    if (s.opgelost){ $('#gum').disabled = true; $('#wis').disabled = true; }
+    if (it.bron) toonBronTabellen(it);
+  } else if (it.graf){ links.appendChild(it.graf()); }
+  else if (ctx.graf){ links.appendChild(ctx.graf()); }
+  else { links.innerHTML = ctx.links(); }
+  // invoer rechts
+  const inv = $('#invoer');
+  if (it.type === 'num'){
+    inv.innerHTML = `<div class="antw-rij"><label for="a0">Antwoord:</label><input class="inv" id="a0" inputmode="decimal" autocomplete="off">${it.eenheid ? `<span>${esc(it.eenheid)}</span>` : ''}</div>`;
+  } else if (it.type === 'tijd'){
+    inv.innerHTML = `<div class="antw-rij"><label for="a0">Tijd:</label><input class="inv" id="a0" placeholder="bijv. 9:30" autocomplete="off"><span>uur</span></div>`;
+  } else if (it.type === 'formule'){
+    const n = it.aantal || 1;
+    inv.innerHTML = Array.from({length: n}, (_, k) => `<div class="antw-rij"><label for="a${k}">${n > 1 ? 'Manier ' + (k + 1) + ':' : 'Formule:'}</label><input class="inv breed" id="a${k}" autocomplete="off" spellcheck="false" placeholder="${it.begin ? it.begin + ' = …' : 'typ de formule'}"></div>`).join('')
+      + `<div class="pogingen">Typ een min als - en een keer als * of ×.</div>`;
+  } else if (it.type === 'tabel'){
+    inv.innerHTML = `<div class="tabel-wrap"><table class="wt${it.kop.every(k => k.length <= 3) ? ' kort' : ''}"><tr><th>${fmtF(it.kop[0])}</th>${it.xs.map(x => `<th>${String(x).replace('-', '−')}</th>`).join('')}</tr>
+      <tr><th>${fmtF(it.kop[1])}</th>${it.ans.map((a, k) => (it.gegeven || []).includes(k) ? `<td class="gegeven">${String(a).replace('-', '−')}</td>` : `<td><input id="c${k}" inputmode="decimal" autocomplete="off" aria-label="${esc(it.kop[1])} bij ${esc(it.kop[0])} = ${it.xs[k]}"></td>`).join('')}</tr></table></div>`;
+  } else if (it.type === 'stappen'){
+    const vak = (id, lab) => `<input class="inv vak" id="${id}" inputmode="decimal" autocomplete="off" aria-label="${esc(lab)}">`;
+    inv.innerHTML = (it.begin ? `<div class="stap start">${fmtF(it.begin)}</div>` : '') + `<div class="stappen">${it.velden.map((v, k) => {
+      if (v.as) return '';
+      if (v.tpl){ const d = v.tpl.split('{}'); return `<div class="stap formulestap">${d.map((t, j) => fmtF(t) + (j < d.length - 1 ? vak(`a${k}_${j}`, `Stap ${k + 1}, vakje ${j + 1}`) : '')).join('')}</div>`; }
+      return `<div class="stap"><label class="lab" for="a${k}">${fmtF(v.lab)}</label>${v.soort === 'keuze'
+       ? `<select id="a${k}">${v.opties.map((o, j) => `<option value="${j}">${esc(o)}</option>`).join('')}</select>`
+       : `<input class="inv" id="a${k}" inputmode="decimal" autocomplete="off">`}</div>`; }).join('')}</div>`;
+  } else if (it.type === 'mk'){
+    inv.innerHTML = `<div class="opties">${it.opties.map((o, k) => `<button class="optie" data-k="${k}" aria-pressed="false">${regels(o)}</button>`).join('')}</div>`;
+    s.keuze = s.keuze || [];
+    inv.querySelectorAll('.optie').forEach(b => b.onclick = () => {
+      if (s.opgelost) return; const k = +b.dataset.k;
+      if (it.multi){ const i = s.keuze.indexOf(k); i >= 0 ? s.keuze.splice(i, 1) : s.keuze.push(k); }
+      else s.keuze = [k];
+      inv.querySelectorAll('.optie').forEach(x => { const on = s.keuze.includes(+x.dataset.k); x.classList.toggle('gekozen', on); x.setAttribute('aria-pressed', on); });
+    });
+    if (it.multi){
+      inv.insertAdjacentHTML('beforeend', '<button class="knop licht" id="wisKeuze" type="button">✕ Wis antwoorden</button>');
+      $('#wisKeuze').onclick = () => {
+        if (s.opgelost) return;
+        s.keuze = []; bewaar();
+        inv.querySelectorAll('.optie').forEach(x => { x.classList.remove('gekozen', 'goed', 'fout'); x.setAttribute('aria-pressed', false); });
+        const fb = $('#feedback'); if (fb && !fb.classList.contains('goed')){ fb.className = 'feedback'; fb.innerHTML = ''; }
+      };
+    }
+  }
+  if (it.type === 'stappen' && it.velden.some(v => v.as)) zetAsVakken(it);
+  herstelInvoer(it, s);
+  $('#controleer').onclick = () => controleer(it);
+  $('#hintKnop').onclick = () => toonHint(it);
+  if (it.toets){ $('#hintKnop').hidden = true; $('#controleer').textContent = 'Antwoord inleveren'; }
+  inv.querySelectorAll('input').forEach(i => i.addEventListener('keydown', e => { if (e.key === 'Enter') controleer(it); }));
+  toonStatus(it);
+  toonBerekeningen(it);
+}
+
+// invulvakjes direct op de as van het assenstelsel
+function zetAsVakken(it){
+  const svg = document.querySelector('#links svg.graf'); if (!svg) return;
+  const wrap = document.createElement('div'); wrap.className = 'as-wrap'; svg.replaceWith(wrap); wrap.appendChild(svg);
+  const [ax, ay] = svg._as, W = svg._W, H = svg._H;
+  it.velden.forEach((v, k) => { if (!v.as) return; v.pos.forEach((w, j) => {
+    const inp = document.createElement('input'); inp.className = 'asvak'; inp.id = `a${k}_${j}`; inp.inputMode = 'decimal'; inp.autocomplete = 'off';
+    inp.setAttribute('aria-label', `${v.as === 'y' ? 'Verticale' : 'Horizontale'} as, vakje ${j + 1}`);
+    if (v.as === 'y'){ inp.style.left = ((svg._X(ay) - 5) / W * 100) + '%'; inp.style.top = (svg._Y(w) / H * 100) + '%'; inp.style.transform = 'translate(-100%,-50%)'; }
+    else { inp.style.left = (svg._X(w) / W * 100) + '%'; inp.style.top = ((svg._Y(ax) + 15) / H * 100) + '%'; inp.style.transform = 'translate(-50%,-50%)'; }
+    inp.addEventListener('keydown', e => { if (e.key === 'Enter') controleer(it); });
+    wrap.appendChild(inp);
+  }); });
+}
+function herstelInvoer(it, s){
+  const w = s.waarden || {};
+  Object.entries(w).forEach(([id, v]) => { const e = document.getElementById(id); if (e) e.value = v; });
+  if (it.type === 'mk' && s.keuze) document.querySelectorAll('.optie').forEach(x => x.classList.toggle('gekozen', s.keuze.includes(+x.dataset.k)));
+  if (s.hint){ const hv = $('#hintvak'); hv.classList.add('open'); hv.innerHTML = it.hint.slice(0, s.hint).map((h, k) => `<div><b>Hint ${k + 1}:</b> ${miniLees()}<br>${regels(h)}</div>`).join(''); }
+}
+
+/* ---------- wat heeft de leerling precies ingevuld (voor de docent) ---------- */
+function antwTekst(it, w, s){
+  try {
+    const sym = v => String(v).trim() === '' ? '…' : String(v).trim();
+    if (it.type === 'mk') return (s.keuze || []).map(k => it.opties[k]).join(' + ');
+    if (it.type === 'grafiek') return (s.invoer || []).map(p => `(${p[0]}, ${p[1]})`).join(' ');
+    if (it.type === 'tabel') return it.xs.map((x, k) => (it.gegeven || []).includes(k) ? null : `${x}→${sym(w['c' + k] || '')}`).filter(Boolean).join('  ');
+    if (it.type === 'stappen') return it.velden.map((f, k) => {
+      if (f.tpl){ const d = f.tpl.split('{}'); return d.map((t, j) => t + (j < d.length - 1 ? '[' + sym(w[`a${k}_${j}`] || '') + ']' : '')).join(''); }
+      if (f.soort === 'keuze') return (f.lab || '') + ' ' + (f.opties[+w['a' + k]] || '…');
+      if (f.as) return f.ans.map((a, j) => sym(w[`a${k}_${j}`] || '')).join(', ');
+      return (f.lab || '') + ' ' + sym(w['a' + k] || '');
+    }).join(' | ');
+    return Object.keys(w).sort().map(k => sym(w[k])).join(' | ');
+  } catch (e) { return ''; }
+}
+function verzamel(it){
+  const w = {}; document.querySelectorAll('#invoer input, #invoer select, #links input.asvak').forEach(e => w[e.id] = e.value); return w;
+}
+function toonStatus(it){
+  const s = st(it.id); const fb = $('#feedback'); const pg = $('#pogingen');
+  const n = s.pogingen.length;
+  pg.textContent = n ? `Pogingen: ${n}${s.hint ? ' · hint gebruikt' : ''}` : '';
+  if (s.opgelost && it.toets){
+    if (!S.toetsKlaar){ fb.className = 'feedback info'; fb.innerHTML = 'Je antwoord is opgeslagen.<br>Ga door naar de volgende vraag.'; }
+    else if (s.toetsGoed){ fb.className = 'feedback goed'; fb.innerHTML = `${miniLees()}Goed! Je krijgt 2 punten.<br>${it.uitleg.map(u => regels(u)).join('<br>')}`; }
+    else { fb.className = 'feedback fout'; fb.innerHTML = `${miniLees()}Dit was niet goed. 0 punten.<br>Zo moest het:<br>${it.uitleg.map(u => regels(u)).join('<br>')}${it.type === 'grafiek' ? '<br>De goede grafiek is groen.' : ''}`; }
+    pg.textContent = '';
+    document.querySelectorAll('#invoer input, #invoer select, #links input.asvak').forEach(e => { e.disabled = true; });
+    $('#controleer').disabled = true;
+    return;
+  }
+  if (s.opgelost){
+    const p = puntenVan(s);
+    fb.className = 'feedback goed';
+    const vx = it.vrij && s.waarden ? parseNum(s.waarden.a0_0 || '') : NaN;
+    const uitl = it.vrijUitleg && !isNaN(vx) ? it.vrijUitleg(vx) : it.uitleg;
+    fb.innerHTML = `${miniLees()}Goed zo! Je krijgt ${p} ${p === 1 ? 'punt' : 'punten'}.<br>${uitl.map(u => regels(u)).join('<br>')}`;
+    document.querySelectorAll('#invoer input, #invoer select, #links input.asvak').forEach(e => { e.disabled = true; });
+    $('#controleer').disabled = true; $('#hintKnop').disabled = true;
+    const wk = $('#wisKeuze'); if (wk) wk.disabled = true;
+  }
+}
+
+
+/* ---------- tabel van de vorige vraag bij een grafiekopdracht ---------- */
+function toonBronTabellen(it){
+  const links = $('#links'); if (!links) return;
+  const vak = document.createElement('div'); vak.className = 'bron-boven'; links.prepend(vak);
+  // alle bron-tabellen samenvoegen tot één tabel die bij het assenstelsel hoort
+  const kol = new Map(); const nietAf = []; let kop = null;
+  it.bron.forEach(bid => {
+    const vast = typeof bid === 'object';
+    const b = vast ? bid : ITEMS.find(x => x.id === bid); if (!b) return; kop = kop || b.kop;
+    const bs = vast ? {opgelost: true} : (S.items[bid] || {}); const af = !!bs.opgelost; const w = bs.waarden || {};
+    if (!af) nietAf.push({bid, naam: (b.nr + b.deel).replace(/\s+/g, '')});
+    b.xs.forEach((x, k) => {
+      let y = null;
+      if ((b.gegeven || []).includes(k) || af) y = b.ans[k];
+      else { const v = parseNum(w['c' + k]); if (!isNaN(v)) y = v; }
+      if (y != null) y = String(y).replace('.', ',');
+      if (!kol.has(x) || kol.get(x) == null) kol.set(x, y);
+    });
+  });
+  const xs = [...kol.keys()].sort((p, q) => p - q);
+  vak.innerHTML = `<div class="bron">
+      <div class="bron-kop">Tabel bij de grafiek</div>
+      <div class="tabel-wrap"><table class="wt bron-tabel${kop.every(k => k.length <= 3) ? ' kort' : ''}">
+        <tr><th>${fmtF(kop[0])}</th>${xs.map(x => `<th>${String(x).replace('-', '−')}</th>`).join('')}</tr>
+        <tr><th>${fmtF(kop[1])}</th>${xs.map(x => { const y = kol.get(x); return y == null ? '<td class="leeg">…</td>' : `<td class="gegeven">${String(y).replace('-', '−')}</td>`; }).join('')}</tr>
+      </table></div>
+      ${nietAf.map(n => `<div class="bron-let">Let op: opdracht ${esc(n.naam)} is nog niet goed af. <button class="knop-tekst" data-ga="${esc(n.bid)}">Ga naar ${esc(n.naam)}</button></div>`).join('')}
+    </div>`;
+  vak.querySelectorAll('[data-ga]').forEach(b => b.onclick = () => ga(ITEMS.findIndex(x => x.id === b.dataset.ga)));
+
+}
+/* ---------- nakijken ---------- */
+function controleer(it){
+  const s = st(it.id); if (s.opgelost) return;
+  const w = verzamel(it); s.waarden = w;
+  let goed = false, cat = '', leeg = false, schrijf = '';
+  const markeer = (id, ok) => { const e = document.getElementById(id); if (e){ e.classList.toggle('goed', ok); e.classList.toggle('fout', !ok); } };
+  const NUMMSG = 'Typ in elk vakje alleen een getal, bijvoorbeeld 90 of −7.';
+  if (it.type === 'num'){
+    const v = parseNum(w.a0); leeg = w.a0.trim() === '';
+    if (!leeg && isNaN(v)) schrijf = 'Typ alleen een getal, bijvoorbeeld 90 of −7.';
+    goed = it.bereik ? (v >= it.bereik[0] - 1e-9 && v <= it.bereik[1] + 1e-9) : Math.abs(v - it.ans) < 1e-9;
+    if (!goed && !leeg){ cat = (it.fouten && it.fouten[String(v)]) || (Math.abs(v + it.ans) < 1e-9 ? 'Min-teken fout' : 'Rekenfout'); }
+    if (!schrijf) markeer('a0', goed);
+  } else if (it.type === 'tijd'){
+    leeg = w.a0.trim() === '';
+    const v = parseTijd(w.a0); goed = v === parseTijd(it.ans);
+    if (!leeg && v == null) schrijf = 'Schrijf de tijd zo: 9:30 (uren, dubbele punt, minuten).';
+    if (!goed && !leeg){ const k = v == null ? '' : `${Math.floor(v / 60)}:${String(v % 60).padStart(2, '0')}`; cat = (it.fouten && it.fouten[k]) || 'Afleesfout of rekenfout bij de tijd'; }
+    if (!schrijf) markeer('a0', goed);
+  } else if (it.type === 'tabel'){
+    let fout = 0, min = 0, leegVak = 0, onleesbaar = 0; leeg = true; const res = [];
+    it.ans.forEach((a, k) => { if ((it.gegeven || []).includes(k)) return; const raw = w['c' + k]; const v = parseNum(raw);
+      if (raw.trim() === '') leegVak++; else { leeg = false; if (isNaN(v)) onleesbaar++; }
+      const ok = Math.abs(v - a) < 1e-9; res.push(['c' + k, ok]); if (!ok){ fout++; if (Math.abs(v + a) < 1e-9 && a !== 0) min++; } });
+    if (!leeg && onleesbaar) schrijf = NUMMSG; else if (!leeg && leegVak) schrijf = 'Vul eerst alle vakjes van de tabel in.';
+    if (!schrijf) res.forEach(([id, ok]) => markeer(id, ok));
+    goed = fout === 0;
+    if (!goed && !leeg) cat = min ? `Min-teken fout in de tabel (${fout} ${fout === 1 ? 'vakje' : 'vakjes'} fout)` : `Rekenfout in de tabel (${fout} ${fout === 1 ? 'vakje' : 'vakjes'} fout)`;
+  } else if (it.type === 'stappen'){
+    let fout = 0; leeg = true; let eerste = '', leegVak = 0, onleesbaar = 0, geenKeuze = 0; const res = [];
+    const getal = (id, ans, catVeld) => { const raw = w[id] || ''; const v = parseNum(raw);
+      if (raw.trim() === '') leegVak++; else { leeg = false; if (isNaN(v)) onleesbaar++; }
+      const ok = Math.abs(v - ans) < 1e-9;
+      if (!ok && !eerste && raw.trim() !== '') eerste = catVeld || (it.fouten && it.fouten[String(v)]) || (!isNaN(v) && Math.abs(v + ans) < 1e-9 && ans !== 0 ? 'Min-teken fout' : '');
+      res.push([id, ok]); if (!ok) fout++; };
+    // vrij: de leerling kiest zelf het getal dat hij invult; de andere vakjes worden daarmee nagerekend
+    const vrijX = it.vrij ? parseNum(w['a0_0'] || '') : NaN;
+    const vrijAns = it.vrij && !isNaN(vrijX) ? it.vrij(vrijX) : null;
+    it.velden.forEach((f, k) => {
+      if (f.tpl || f.as){ (vrijAns ? vrijAns[k] : f.ans).forEach((a, j) => getal(`a${k}_${j}`, a, f.invul && j === 0 && !vrijAns ? 'Verkeerd getal ingevuld in de formule' : '')); return; }
+      if (f.soort === 'keuze'){ const raw = w['a' + k]; const ok = +raw === f.ans; if (+raw === 0) geenKeuze++; else leeg = false; if (!ok && !eerste && +raw !== 0) eerste = 'Verkeerde keuze gemaakt'; res.push(['a' + k, ok]); if (!ok) fout++; }
+      else getal('a' + k, f.ans);
+    });
+    if (!leeg && onleesbaar) schrijf = NUMMSG; else if (!leeg && leegVak) schrijf = 'Vul eerst alle vakjes in.'; else if (!leeg && geenKeuze) schrijf = 'Maak ook een keuze in het keuzelijstje.';
+    if (!schrijf) res.forEach(([id, ok]) => markeer(id, ok));
+    goed = fout === 0; if (!goed && !leeg) cat = eerste || 'Rekenfout in een tussenstap';
+  } else if (it.type === 'mk'){
+    const k = (s.keuze || []).slice().sort(); leeg = k.length === 0;
+    const ans = (it.multi ? it.ans : [it.ans]).slice().sort();
+    if (!leeg && it.multi && k.length !== ans.length) schrijf = `Kies ${ans.length} antwoorden.`;
+    goed = k.length === ans.length && k.every((v, i) => v === ans[i]);
+    if (!schrijf) document.querySelectorAll('.optie').forEach(x => { x.classList.remove('goed', 'fout'); if (k.includes(+x.dataset.k)) x.classList.add(goed ? 'goed' : 'fout'); });
+    if (!goed && !leeg) cat = 'Verkeerde keuze gemaakt';
+  } else if (it.type === 'formule'){
+    const n = it.aantal || 1; const ok = []; leeg = true; const res = [];
+    const uit = vergelijking(it.orig).uit; const letters = it.vars.concat(uit);
+    const gezien = new Set([normFormule(it.orig)]);
+    let leegVak = 0;
+    for (let k = 0; k < n; k++){
+      const raw = w['a' + k] || ''; if (raw.trim()) leeg = false; else { leegVak++; ok.push(false); res.push(['a' + k, false]); continue; }
+      let r = false, c = '';
+      const nf = normFormuleX(raw, letters);
+      const vreemd = (nf.match(/[a-z]/g) || []).filter(l => !letters.includes(l));
+      if ((nf.match(/=/g) || []).length !== 1){ if (!schrijf) schrijf = `Een formule heeft één = teken. Bijvoorbeeld: ${it.begin || uit} = …`; }
+      else if (vreemd.length){ if (!schrijf) schrijf = `Gebruik alleen de letters ${letters.join(' en ')}. Je typte: ${[...new Set(vreemd)].join(', ')}.`; }
+      else if ((nf.match(/\(/g) || []).length !== (nf.match(/\)/g) || []).length){ if (!schrijf) schrijf = 'Er ontbreekt een haakje. Controleer of elk ( ook een ) heeft.'; }
+      else {
+        try {
+          vergelijking(nf);
+          if (it.zonderKeer && /\*/.test(nf)) c = '×-teken niet weggelaten';
+          else if (n > 1 && (nf === normFormule(it.orig) || gezien.has(nf))) c = 'Zelfde formule als de gegeven formule (of twee keer dezelfde)';
+          else if (it.begin && !nf.startsWith(it.begin + '=')) c = `Begin met ${it.begin} =`;
+          else if (it.moetStarten && !nf.startsWith(it.begin + '=' + it.moetStarten)) c = 'Wat links en rechts van het + teken staat is niet verwisseld';
+          else if (gelijkwaardig(it.orig, nf, it.vars)) r = true;
+          else c = (/\(/.test(it.orig) && !/\(/.test(nf)) ? 'Haakjes vergeten' : 'Formule is niet gelijkwaardig aan de gegeven formule';
+          gezien.add(nf);
+        } catch (e) { if (!schrijf) schrijf = `Deze formule kan ik niet lezen. Schrijf hem bijvoorbeeld zo: ${it.begin || uit} = …`; }
+      }
+      res.push(['a' + k, r]); ok.push(r); if (!r && !cat) cat = c;
+    }
+    if (!schrijf && !leeg && leegVak) schrijf = n > 1 ? 'Vul beide manieren in.' : '';
+    if (!schrijf) res.forEach(([id, r]) => markeer(id, r));
+    goed = ok.every(Boolean);
+  } else if (it.type === 'grafiek'){
+    const pts = s.invoer || []; leeg = pts.length === 0;
+    const opLijn = ([x, y]) => it.pts ? it.pts.some(q => Math.abs(q[0] - x) < 1e-9 && Math.abs(q[1] - y) < 1e-9) : Math.abs(it.f(x) - y) < 1e-9;
+    const fout = pts.filter(p => !opLijn(p));
+    if (it.pts && !fout.length && pts.length >= it.min && it.volgorde === 'klik' && !it.pts.every((q, k) => pts[k] && pts[k][0] === q[0] && pts[k][1] === q[1])){
+      goed = false; cat = 'Punten in de verkeerde volgorde verbonden';
+    } else {
+    if (!leeg && pts.length < it.min && !fout.length && !it.pts) schrijf = `Zet minstens ${it.min} punten.`;
+    goed = pts.length >= it.min && fout.length === 0;
+    if (!goed && !leeg) cat = `Punt ligt niet op de goede plek (${fout.map(p => '(' + p.join('; ').replace(/\./g, ',') + ')').join(' ').replace(/-/g, '−')})`;
+    if (!goed && !leeg && !fout.length && it.pts) cat = '', schrijf = `Je mist nog ${it.min - pts.length} ${it.min - pts.length === 1 ? 'punt' : 'punten'} uit de tabel.`;
+    }
+  }
+  const fb = $('#feedback');
+  if (leeg){ fb.className = 'feedback info'; fb.textContent = 'Vul eerst een antwoord in.'; return; }
+  if (schrijf){ fb.className = 'feedback info'; fb.innerHTML = `${fmtF(schrijf)}<br><span style="font-weight:500">Dit telt niet als fout. Pas het aan en klik opnieuw op Controleer.</span>`; return; }
+  if (it.toets){
+    const t = nu(); s.pogingen.push({goed, cat, ms: t - (s.laatste || t), keuze: it.type === 'mk' ? (s.keuze || []).slice() : undefined, hint: 0, antw: antwTekst(it, w, s).slice(0, 300)});
+    s.tijd = t - s.gezien; s.opgelost = true; s.toetsGoed = goed; s.punten = goed ? 2 : 0; bewaar();
+    document.querySelectorAll('#main input.goed, #main input.fout, #main select.goed, #main select.fout, #main .optie.goed, #main .optie.fout').forEach(e => e.classList.remove('goed', 'fout'));
+    toonStatus(it); updateStrook(); if (it.type === 'grafiek') document.querySelector('svg.graf')._teken(); return;
+  }
+  const t = nu(); const dt = t - (s.laatste || t); s.laatste = t;
+  s.pogingen.push({goed, cat, ms: dt, keuze: it.type === 'mk' ? (s.keuze || []).slice() : undefined, hint: s.hint, antw: antwTekst(it, w, s).slice(0, 300)});
+  s.tijd = t - s.gezien;
+  if (goed){ s.opgelost = true; s.punten = puntenVan(s); bewaar(); toonStatus(it); updateStrook(); if (it.type === 'grafiek') document.querySelector('svg.graf')._teken(); return; }
+  bewaar();
+  const fouten = s.pogingen.filter(p => !p.goed).length;
+  fb.className = 'feedback fout';
+  fb.innerHTML = `${miniLees()}Nog niet goed.${cat ? '<br>' + fmtF(cat) + '.' : ''}<br>${fouten === 1 ? 'Kijk nog eens goed en probeer het opnieuw.' : fouten === 2 ? 'Gebruik de hint als je vastzit.' : 'Probeer het nog een keer.'}`;
+  $('#pogingen').textContent = `Pogingen: ${s.pogingen.length}${s.hint ? ' · hint gebruikt' : ''}`;
+  updateStrook();
+  if (fouten >= 4 && !s.hulpGetoond){ s.hulpGetoond = true; bewaar(); toonHulp(it); }
+}
+function updateStrook(){
+  const it = ITEMS[S.huidig]; const b = document.querySelector(`.stip[data-i="${S.huidig}"]`); if (!b) return;
+  const s = S.items[it.id]; b.classList.remove('goed0', 'goed1', 'goed2', 'bezig', 'ingeleverd');
+  if (s.opgelost) b.classList.add(it.toets && !S.toetsKlaar ? 'ingeleverd' : 'goed' + puntenVan(s)); else if (s.pogingen.length) b.classList.add('bezig');
+  const v = document.querySelector('.voortgang'); if (v && it.toets) v.textContent = `${TOETSVRAGEN.filter(x => S.items[x.id] && S.items[x.id].opgelost).length} van ${TOETSVRAGEN.length} toetsvragen gemaakt`; else if (v) v.textContent = `${VRAGEN.filter(x => S.items[x.id] && S.items[x.id].opgelost).length} van ${VRAGEN.length} opdrachten af`;
+}
+function toonHint(it){
+  const s = st(it.id); if (s.opgelost) return;
+  s.hint = Math.min(it.hint.length, (s.hint || 0) + 1); bewaar();
+  const hv = $('#hintvak'); hv.classList.add('open');
+  hv.innerHTML = it.hint.slice(0, s.hint).map((h, k) => `<div><b>Hint ${k + 1}:</b> ${miniLees()}<br>${regels(h)}</div>`).join('')
+    + (s.hint >= it.hint.length ? '' : '<div style="font-size:13px;margin-top:6px">Klik nog een keer op Hint voor meer hulp.</div>');
+  $('#pogingen').textContent = `Pogingen: ${s.pogingen.length} · hint gebruikt`;
+}
+function toonHulp(it){
+  const ov = $('#overlay'); const inh = $('#ovInhoud');
+  inh.innerHTML = `<p>Je hebt het nu vier keer geprobeerd.<br>Hier zie je stap voor stap hoe het werkt.</p>` + it.uitleg.map((u, k) => `<div class="ov-stap"><span class="nr">${k + 1}</span>${fmtF(u)}</div>`).join('');
+  if (it.type === 'grafiek'){ const g = maakGrafiek(it.g, {lijnen: (it.vast || []).concat([it.pts ? {pts: it.pts} : {f: it.f}])}); g.style.maxWidth = '440px'; inh.appendChild(g); }
+  ov.hidden = false;
+  inh.querySelectorAll('.ov-stap').forEach((e, k) => setTimeout(() => e.classList.add('zichtbaar'), 400 + k * 1100));
+  $('#ovSluit').focus();
+}
+$('#ovSluit').onclick = () => { $('#overlay').hidden = true; };
+
+/* =========================================================
+   START- EN EINDSCHERM
+   ========================================================= */
+function startScherm(){
+  const online = !!db();
+  const terug = S.naam && Object.keys(S.items).length;
+  app.innerHTML = `<div class="scherm" style="grid-row:1/-1">
+    <span class="label-domein">2BB en 2KB · Hoofdstuk 4 Procenten</span>
+    <h2>H4 Procenten – oefenen met Professor Pi Pluis</h2>
+    <p>In deze app oefen je met procenten.<br>Er zijn 5 levels. Elk level begint met een korte uitleg van Pi Pluis.<br>Daarna maak je de opdrachten.</p>
+    <p>Je schrijft bij elke opdracht je berekening op.<br>Snap je een vraag niet? Klik dan op <b>Hulp van Pi Pluis</b>.</p>
+    <p>Alle opdrachten af?<br>Dan maak je de <b>Eindtoets</b>: ${TOETSVRAGEN.length} vragen, één poging, geen hints.<br>Voor de eindtoets krijg je een cijfer.</p>
+    ${terug ? `<div class="analyse"><b>Welkom terug, ${esc(S.naam)}!</b><br>Je hebt al ${VRAGEN.filter(v => S.items[v.id] && S.items[v.id].opgelost).length} opdrachten af.${S.code ? `<br>Jouw code: <b class="code">${esc(S.code)}</b>` : ''}
+      <div class="knoppen"><button class="knop hoofd" id="verderHier">Verder gaan</button><button class="knop licht" id="andere">Ik ben iemand anders</button></div></div>` : ''}
+    <div class="startkeuze" ${terug ? 'hidden' : ''} id="startkeuze">
+      <div class="analyse">
+        <b>Ik begin voor het eerst</b>
+        <div class="antw-rij"><label for="naam" style="min-width:150px">Je naam:</label><input class="inv breed" id="naam" autocomplete="name"></div>
+        <div class="antw-rij"><label for="klas" style="min-width:150px">Je klas:</label><input class="inv" id="klas"></div>
+        <div class="feedback" id="fbStart"></div>
+        <div class="knoppen"><button class="knop hoofd" id="begin">Beginnen</button></div>
+      </div>
+      <div class="analyse">
+        <b>Ik ga verder met mijn code</b>
+        ${online ? `<div class="antw-rij"><label for="codeIn" style="min-width:150px">Jouw code:</label><input class="inv" id="codeIn" placeholder="ABCD-2345" autocomplete="off" spellcheck="false" style="text-transform:uppercase;letter-spacing:2px"></div>
+        <div class="feedback" id="fbCode"></div>
+        <div class="knoppen"><button class="knop paars" id="laadCode">Verder werken</button></div>` : '<p>Online opslaan staat uit. Je werk wordt alleen op deze computer bewaard.</p>'}
+      </div>
+    </div>
+  </div>`;
+  const vh = $('#verderHier'); if (vh) vh.onclick = () => { S.gestart = true; if (!S.code && online){ S.code = nieuweCode(); bewaar(); return toonCode(true); } bewaar(); render(); };
+  const an = $('#andere'); if (an) an.onclick = () => { wolkNu(); S = {naam: '', klas: '', start: new Date().toISOString(), huidig: 0, items: {}, gestart: false, klaar: false}; try { localStorage.removeItem(OPSLAG); } catch (e) {} render(); };
+  $('#begin').onclick = () => { const n = $('#naam').value.trim(); if (!n){ const f = $('#fbStart'); f.className = 'feedback fout'; f.textContent = 'Vul eerst je naam in.'; return; }
+    S = {naam: n, klas: $('#klas').value.trim(), start: new Date().toISOString(), huidig: 0, items: {}, gestart: true, klaar: false, code: online ? nieuweCode() : null};
+    bewaar(); online ? toonCode(true) : render(); };
+  const lc = $('#laadCode');
+  if (lc){
+    const laad = async () => {
+      const f = $('#fbCode'); const code = normCode($('#codeIn').value);
+      if (!code){ f.className = 'feedback fout'; f.textContent = 'Een code heeft 8 tekens, bijvoorbeeld ABCD-2345.'; return; }
+      f.className = 'feedback info'; f.textContent = 'Bezig met laden…';
+      try {
+        const {data, error} = await db().rpc('voortgang_laden', {p_code: code});
+        if (error) throw error;
+        if (!data){ f.className = 'feedback fout'; f.textContent = 'Deze code bestaat niet. Kijk goed of je hem goed hebt overgeschreven, of vraag je docent.'; return; }
+        if (!data.data || data.data.module !== (window.APP_CONFIG || {}).MODULE){ f.className = 'feedback fout'; f.textContent = 'Deze code hoort bij een andere oefenapp. Gebruik de code die je bij deze app hebt gekregen.'; return; }
+        S = Object.assign({items: {}, huidig: 0}, data.data, {code, gestart: true, klaar: false}); bewaar(); render();
+      } catch (e) { f.className = 'feedback fout'; f.textContent = 'Laden lukt niet. Heb je internet?'; }
+    };
+    lc.onclick = laad; $('#codeIn').addEventListener('keydown', e => { if (e.key === 'Enter') laad(); });
+  }
+}
+function toonCode(nieuw){
+  const ov = $('#overlay'); $('#ovTitel').textContent = nieuw ? 'Schrijf je code op!' : 'Jouw code';
+  $('#ovInhoud').innerHTML = `<p>Met deze code kun je de volgende les verder waar je gebleven was, ook op een andere computer.</p>
+    <div class="code-groot">${esc(S.code)}</div>
+    <p>Schrijf hem in je agenda of schrift.<br>Je docent kan je code ook opzoeken als je hem kwijt bent.</p>`;
+  $('#ovSluit').textContent = nieuw ? 'Ik heb mijn code opgeschreven' : 'Sluiten';
+  ov.hidden = false;
+  $('#ovSluit').onclick = () => { ov.hidden = true; $('#ovSluit').textContent = 'Ik snap het, ik probeer het zelf'; $('#ovTitel').textContent = 'Stap voor stap'; $('#ovSluit').onclick = () => { $('#overlay').hidden = true; }; render(); };
+  $('#ovSluit').focus();
+}
+
+function analyse(){
+  let behaald = 0; const totaal = VRAGEN.length * 2; const regels = []; const cats = {};
+  let alle = 0, snel = 0, spreiding = 0, rits = 0;
+  VRAGEN.forEach(v => {
+    const s = S.items[v.id];
+    const naam = `Vraag ${v.nr}${v.deel ? v.deel.replace(/\s+/g, '') : ''}`;
+    if (!s || !s.pogingen.length){ regels.push({naam, tekst: 'Overgeslagen', punten: 0, pogingen: 0, tijd: 0, fouten: []}); return; }
+    const p = puntenVan(s); behaald += p;
+    const fouten = s.pogingen.filter(x => !x.goed).map(x => x.cat).filter(Boolean);
+    fouten.forEach(c => { const k = c.replace(/\s*\(.*\)$/, ''); cats[k] = (cats[k] || 0) + 1; });
+    alle += s.pogingen.length;
+    s.pogingen.forEach((x, i) => { if (x.ms < 3000) snel++; if (i > 0 && !x.goed && !s.pogingen[i - 1].goed && x.ms < 5000 && !x.hint) rits++; });
+    if (v.type === 'mk' && !v.multi){ const geprobeerd = new Set(s.pogingen.map(x => (x.keuze || [])[0])); if (geprobeerd.size >= v.opties.length - 1 && v.opties.length >= 3) spreiding++; }
+    const t = sec(s.tijd || 0);
+    let tekst;
+    if (!s.opgelost) tekst = `0 pt (Niet afgemaakt; Fout: ${fouten[fouten.length - 1] || 'onbekend'}; Pogingen: ${s.pogingen.length}, Tijd: ${t}s)`;
+    else if (p === 2) tekst = `Goed (Pogingen: ${s.pogingen.length}, Tijd: ${t}s)`;
+    else tekst = `${p} pt (${fouten.length ? 'Fout: ' + fouten[0] + '; ' : 'Hint gebruikt; '}Pogingen: ${s.pogingen.length}, Tijd: ${t}s)`;
+    if (s.rekenmachine) tekst = tekst.replace(/\)$/, ', rekenmachine gebruikt)');
+    regels.push({naam, tekst, punten: p, pogingen: s.pogingen.length, tijd: t, fouten, hint: s.hint || 0, rekenmachine: s.rekenmachine || 0});
+  });
+  const cijfer = Math.min(10, Math.max(1, Math.round(((behaald / totaal) * 9 + 1) * 10) / 10));
+  const gokScore = alle ? (snel + spreiding * 3 + rits) / alle : 0;
+  const gok = gokScore < .15 ? 'Laag' : gokScore < .35 ? 'Gemiddeld' : 'Hoog';
+  const top = Object.entries(cats).sort((a, b) => b[1] - a[1]);
+  const ADVIES = {
+    'Min-teken fout': 'Oefen min × min = plus en min − min = plus met de getallenlijn.',
+    'Min × min = plus vergeten': 'Herhaal de regel: min keer min is plus.',
+    'Min min wordt plus vergeten': 'Herhaal: iets aftrekken van een negatief getal is optellen (6 − −2 = 6 + 2).',
+    '×-teken niet weggelaten': 'Laat zien dat 6 × k korter wordt geschreven als 6k.',
+    'Haakjes vergeten': 'Laat zien dat bij korter schrijven de haakjes blijven staan.',
+    'Rekenfout in de tabel': 'Laat de leerling eerst één vakje hardop uitrekenen.',
+    'Min-teken fout in de tabel': 'Oefen het invullen van negatieve getallen met een getallenlijn.',
+    'Punt ligt niet op de goede plek': 'Laat de leerling punten uit de tabel overnemen in het assenstelsel: eerst opzij, dan omhoog.',
+    'Afleesfout': 'Oefen aflezen: zoek het getal op de as, ga naar de grafiek en dan recht naar de andere as.',
+    'Punten in de verkeerde volgorde verbonden': 'Laat de leerling de punten hardop in volgorde benoemen.',
+    'Formule is niet gelijkwaardig aan de gegeven formule': 'Laat met een tabel controleren of twee formules gelijkwaardig zijn.',
+    'Verkeerde keuze gemaakt': 'Laat de leerling eerst de tabellen vergelijken voordat hij kiest.'
+  };
+  const tip = top.length ? (ADVIES[top[0][0]] || `Meest gemaakte fout: "${top[0][0]}". Bespreek deze opdrachten samen.`) : (behaald === totaal ? 'Alles in één keer goed: geef deze leerling uitdagende opdrachten.' : 'Laat de leerling de overgeslagen opdrachten nog maken.');
+  return {behaald, totaal, cijfer, gok, regels, cats: top, tip, snel, spreiding, rits, alle};
+}
+function exportTekst(A){
+  const d = new Date();
+  return `Leerling: ${S.naam}${S.klas ? ' (' + S.klas + ')' : ''}
+Datum & Tijd: ${d.toLocaleDateString('nl-NL')} ${d.toLocaleTimeString('nl-NL', {hour: '2-digit', minute: '2-digit'})}
+Cijfer: ${A.cijfer.toFixed(1).replace('.', ',')} (Score: ${A.behaald}/${A.totaal})
+Gokkans: ${A.gok}
+Foutenanalyse:
+${A.regels.map(r => `- ${r.naam}: ${r.tekst}`).join('\n')}
+Korte samenvatting: ${A.tip}`;
+}
+/* ---------- oefentoets inleveren en uitslag ---------- */
+function toetsInleveren(){
+  const open = TOETSVRAGEN.filter(v => !(S.items[v.id] && S.items[v.id].opgelost)).length;
+  if (!S.toetsKlaar && open && !S.toetsBevestig){ S.toetsBevestig = true;
+    const fb = $('#feedback'); fb.className = 'feedback info'; fb.innerHTML = `Je hebt nog ${open} ${open === 1 ? 'vraag' : 'vragen'} niet gemaakt.<br>Klik nog een keer op <b>Toets inleveren</b> als je toch wilt inleveren.`; return; }
+  S.toetsBevestig = false; S.toetsKlaar = true; S.toetsScherm = true; bewaar(); render(); window.scrollTo(0, 0);
+}
+function toetsScherm(){
+  const cfg = window.APP_CONFIG || {};
+  const behaald = TOETSVRAGEN.reduce((a, v) => a + (S.items[v.id] ? puntenVan(S.items[v.id]) : 0), 0), totaal = TOETSVRAGEN.length * 2;
+  const cijfer = Math.min(10, Math.max(1, Math.round(((behaald / totaal) * 9 + 1) * 10) / 10));
+  const naam = v => `Vraag ${v.nr}${v.deel ? v.deel.replace(/\s+/g, '') : ''}`;
+  const regelsT = TOETSVRAGEN.map(v => { const s = S.items[v.id]; return {v, s, goed: !!(s && s.toetsGoed), gemaakt: !!(s && s.opgelost)}; });
+  const txt = `Leerling: ${S.naam}${S.klas ? ' (' + S.klas + ')' : ''}\nOefentoets: ${cfg.MODULE || ''}\nCijfer: ${cijfer.toFixed(1).replace('.', ',')} (Score: ${behaald}/${totaal})\n` + regelsT.map(r => `- ${naam(r.v)}: ${r.goed ? 'Goed' : r.gemaakt ? 'Fout' : 'Niet gemaakt'}`).join('\n');
+  app.innerHTML = `<div class="scherm" style="grid-row:1/-1;overflow:auto">
+    <span class="label-domein">Uitslag eindtoets · ${esc(cfg.MODULE || '')}</span>
+    <h2>Je eindtoets is nagekeken, ${esc(S.naam)}!</h2>
+    <div class="tegels">
+      <div class="tegel"><div class="k">Cijfer</div><div class="cijfer">${cijfer.toFixed(1).replace('.', ',')}</div></div>
+      <div class="tegel"><div class="k">Punten</div><div class="w">${behaald} / ${totaal}</div></div>
+      <div class="tegel"><div class="k">Goed</div><div class="w">${regelsT.filter(r => r.goed).length} / ${regelsT.length}</div></div>
+    </div>
+    <div class="analyse"><b>Per vraag</b><br>Klik op een vraag om te zien hoe het moest.
+      ${regelsT.map(r => `<div class="toetsregel"><span class="tk ${r.goed ? 'g' : 'f'}">${r.goed ? '✓' : '✗'}</span><button class="knop-tekst" data-ga="${esc(r.v.id)}">${esc(naam(r.v))}</button><span>${r.goed ? 'goed' : r.gemaakt ? 'fout' : 'niet gemaakt'}</span></div>`).join('')}
+    </div>
+    <div class="knoppen">
+      <button class="knop hoofd" id="opnieuw">Toets opnieuw maken</button>
+      <button class="knop licht" id="terugT">← Terug naar de opdrachten</button>
+    </div>
+    <div class="status" id="dbStatus"></div>
+  </div>`;
+  app.querySelectorAll('[data-ga]').forEach(b => b.onclick = () => { S.toetsScherm = false; ga(ITEMS.findIndex(x => x.id === b.dataset.ga)); });
+  $('#terugT').onclick = () => { S.toetsScherm = false; ga(0); };
+  $('#opnieuw').onclick = () => { TOETSVRAGEN.forEach(v => delete S.items[v.id]); S.toetsKlaar = false; S.toetsScherm = false; S.toetsOpgeslagen = null; ga(ITEMS.indexOf(TOETSVRAGEN[0])); };
+  // één keer per poging opslaan bij de docent
+  const el = $('#dbStatus');
+  const sleutel = S.start + '|' + TOETSVRAGEN.map(v => (S.items[v.id] || {}).pogingen ? S.items[v.id].pogingen.length : 0).join('');
+  if (S.toetsOpgeslagen === sleutel){ el.style.color = 'var(--goed)'; el.textContent = 'Je uitslag is opgeslagen bij je docent.'; return; }
+  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || !window.supabase) return;
+  (async () => { try {
+    const d = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    const {error} = await d.from(cfg.TABEL || 'resultaten').insert({leerling: S.naam, klas: S.klas || null, module: (cfg.MODULE || '') + ' · oefentoets', cijfer, score: behaald, totaal, gokkans: null,
+      samenvatting: `Oefentoets: ${regelsT.filter(r => r.goed).length} van ${regelsT.length} goed.`, export_tekst: txt,
+      details: {vragen: regelsT.map(r => ({id: r.v.id, goed: r.goed, gemaakt: r.gemaakt, fout: r.s && r.s.pogingen[0] ? r.s.pogingen[0].cat : null}))}, sessie_start: S.start, code: S.code || null});
+    if (error) throw error; S.toetsOpgeslagen = sleutel; bewaar(); el.style.color = 'var(--goed)'; el.textContent = 'Je uitslag is opgeslagen bij je docent.';
+  } catch (e) { el.style.color = 'var(--fout)'; el.textContent = 'Opslaan bij je docent is niet gelukt.'; } })();
+}
+function afronden(){ S.klaar = true; bewaar(); render(); }
+
+function eindScherm(){
+  const A = analyse(); const txt = exportTekst(A);
+  const cfg = window.APP_CONFIG || {};
+  app.innerHTML = `<div class="scherm" style="grid-row:1/-1;overflow:auto">
+    <span class="label-domein">Resultaten · ${esc(cfg.MODULE || 'H4 Procenten')}</span>
+    <h2>Goed gewerkt, ${esc(S.naam)}!</h2>
+    <div class="tegels">
+      <div class="tegel"><div class="k">Cijfer</div><div class="cijfer">${A.cijfer.toFixed(1).replace('.', ',')}</div></div>
+      <div class="tegel"><div class="k">Punten</div><div class="w">${A.behaald} / ${A.totaal}</div></div>
+      <div class="tegel"><div class="k">Opdrachten af</div><div class="w">${VRAGEN.filter(v => S.items[v.id] && S.items[v.id].opgelost).length} / ${VRAGEN.length}</div></div>
+      <div class="tegel"><div class="k">Gokkans</div><div class="w"><span class="pil ${A.gok.toLowerCase()}">${A.gok}</span></div></div>
+    </div>
+    <div class="analyse"><b>Wat ging er mis?</b>
+      ${A.cats.length ? `<ul>${A.cats.slice(0, 6).map(([c, n]) => `<li>${fmtF(c)}: ${n} keer</li>`).join('')}</ul>` : '<p>Geen fouten gevonden.</p>'}
+      <b>Tip:</b> ${esc(A.tip)}
+      <p style="font-size:13px;color:var(--zacht)">Gokkans is berekend uit snelle antwoorden (onder 3 seconden: ${A.snel}), snel achter elkaar fout zonder hint (${A.rits}) en alle opties uitproberen (${A.spreiding}).</p>
+    </div>
+    <div class="knoppen">
+      <button class="knop hoofd" id="kopieer">Kopieer resultaten voor Forms</button>
+      <button class="knop paars" id="dlTxt">Download resultaten (.txt)</button>
+      <button class="knop paars" id="dlJson">Download resultaten (.json)</button>
+      <button class="knop licht" id="terug">← Terug naar de opdrachten</button>
+    </div>
+    <div class="status" id="status"></div>
+    <div class="status" id="dbStatus"></div>
+    <pre class="export" id="exportTxt">${esc(txt)}</pre>
+  </div>`;
+  $('#terug').onclick = () => { S.klaar = false; bewaar(); render(); };
+  $('#kopieer').onclick = async () => {
+    try { await navigator.clipboard.writeText(txt); $('#status').textContent = 'Gekopieerd! Plak het met Ctrl+V in Forms.'; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents($('#exportTxt')); const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); $('#status').textContent = 'Kopiëren lukte niet automatisch. De tekst is geselecteerd: druk op Ctrl+C.'; }
+  };
+  const json = () => JSON.stringify({leerling: S.naam, klas: S.klas, module: cfg.MODULE, datum: new Date().toISOString(), cijfer: A.cijfer, score: A.behaald, totaal: A.totaal, gokkans: A.gok, tip: A.tip,
+    vragen: VRAGEN.map(v => { const s = S.items[v.id] || {pogingen: []}; return {id: v.id, opgelost: !!s.opgelost, punten: puntenVan(s), pogingen: s.pogingen.length, hints: s.hint || 0, rekenmachine: s.rekenmachine || 0, berekeningen: s.berekeningen || [], tijd_s: sec(s.tijd || 0), fouten: s.pogingen.filter(p => !p.goed).map(p => p.cat)}; })}, null, 1);
+  const download = (naam, inhoud, type) => {
+    try { const b = new Blob([inhoud], {type}); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = naam; document.body.appendChild(a); a.click(); a.remove(); $('#status').textContent = 'Bestand gedownload.'; }
+    catch (e) { $('#status').textContent = 'Downloaden lukt hier niet. Gebruik de kopieerknop.'; }
+  };
+  const bestandsnaam = (S.naam || 'leerling').replace(/[^A-Za-z0-9_-]+/g, '_');
+  $('#dlTxt').onclick = () => download(`resultaten_${bestandsnaam}.txt`, txt, 'text/plain');
+  $('#dlJson').onclick = () => download(`resultaten_${bestandsnaam}.json`, json(), 'application/json');
+  opslaanSupabase(A, txt, JSON.parse(json()));
+}
+
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+async function opslaanSupabase(A, txt, detail){
+  const cfg = window.APP_CONFIG || {}; const el = $('#dbStatus');
+  const sleutel = A.behaald + '-' + A.alle + '-' + A.regels.filter(r => r.pogingen).length;
+  if (S.opgeslagen === sleutel){ el.style.color = 'var(--goed)'; el.textContent = 'Je resultaten zijn al opgeslagen bij je docent.'; return; }
+  if (!cfg.SUPABASE_URL || !cfg.SUPABASE_ANON_KEY || !window.supabase){ el.textContent = 'Online opslaan staat uit. Gebruik de kopieer- of downloadknop.'; return; }
+  el.textContent = 'Resultaten worden opgeslagen…';
+  try {
+    const db = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+    const rij = {leerling: S.naam, klas: S.klas || null, module: cfg.MODULE || null, cijfer: A.cijfer, score: A.behaald, totaal: A.totaal, gokkans: A.gok, samenvatting: A.tip, export_tekst: txt, details: detail, sessie_start: S.start, code: S.code || null};
+    const {error} = await db.from(cfg.TABEL || 'resultaten').insert(rij);
+    if (error) throw error;
+    S.opgeslagen = sleutel; bewaar();
+    el.style.color = 'var(--goed)'; el.textContent = 'Je resultaten zijn opgeslagen bij je docent.';
+  } catch (e) {
+    el.style.color = 'var(--fout)'; el.textContent = 'Opslaan bij je docent is niet gelukt. Gebruik de kopieer- of downloadknop.';
+  }
+}
+
+/* =========================================================
+   REKENMACHINE (examenmodel)
+   Tokens: getallen/tekens als array, met cursor.
+   ========================================================= */
+const RM = {tok: [], cur: 0, inv: false, ans: 0, uit: null, toonBreuk: true, modus: 'math', klaar: false, fout: ''};
+const RM_TONEN = {'sin(': 'sin(', 'cos(': 'cos(', 'tan(': 'tan(', 'asin(': 'sin⁻¹(', 'acos(': 'cos⁻¹(', 'atan(': 'tan⁻¹(', '√(': '√(', '^(': '^(', '×10^(': '×10^(',
+  '²': '²', '⁻¹': '⁻¹', 'π': 'π', 'Ans': 'Ans', '⁄': '⁄', 'neg': '−', '−': ' − ', '+': ' + ', '×': ' × ', '÷': ' ÷ ', '(': '(', ')': ')', ',': ','};
+function rmDelen(tokens){
+  return tokens.map((t, i) => {
+    if (t === '−'){ const v = i > 0 ? tokens[i - 1] : null; if (v == null || ['+', '−', '×', '÷', 'neg', '⁄'].includes(v) || /\($/.test(v)) return '−'; }
+    return RM_TONEN[t] != null ? RM_TONEN[t] : t; });
+}
+function rmTekst(tokens){ return rmDelen(tokens).join(''); }
+function rmBewerk(pos){ RM.klaar = false; RM.oud = true; RM.cur = Math.max(0, Math.min(RM.tok.length, pos)); }
+function rmInvoegen(t){
+  if (RM.klaar){
+    RM.klaar = false;
+    // verder rekenen met het antwoord als je met een bewerking begint
+    if (['+', '−', '×', '÷', '²', '⁻¹', '^(', '⁄', '×10^('].includes(t)){ RM.tok = ['Ans']; RM.cur = 1; }
+    else { RM.tok = []; RM.cur = 0; }
+  }
+  RM.tok.splice(RM.cur, 0, t); RM.cur++;
+}
+function rmToets(t){
+  RM.fout = '';
+  const inv = RM.inv; if (t !== 'INV') RM.inv = false;
+  switch (t){
+    case 'INV': RM.inv = !RM.inv; break;
+    case 'C': if (inv){ RM.ans = 0; } RM.tok = []; RM.cur = 0; RM.uit = null; RM.klaar = false; break;
+    case 'DEL': if (RM.klaar) rmBewerk(RM.tok.length); if (RM.cur > 0){ RM.tok.splice(RM.cur - 1, 1); RM.cur--; } break;
+    case 'links': if (RM.klaar){ rmBewerk(RM.tok.length); break; } RM.cur = Math.max(0, RM.cur - 1); break;
+    case 'rechts': if (RM.klaar){ rmBewerk(0); break; } RM.cur = Math.min(RM.tok.length, RM.cur + 1); break;
+    case 'sin': case 'cos': case 'tan': rmInvoegen((inv ? 'a' : '') + t + '('); break;
+    case 'wortel': rmInvoegen('√('); break;
+    case 'kw': rmInvoegen('²'); break;
+    case 'macht': rmInvoegen('^('); break;
+    case 'inv1': rmInvoegen('⁻¹'); break;
+    case 'pi': rmInvoegen('π'); break;
+    case 'e10': rmInvoegen('×10^('); break;
+    case 'breuk': rmInvoegen('⁄'); break;
+    case 'neg': rmInvoegen('neg'); break;
+    case 'ANS': rmInvoegen('Ans'); break;
+    case 'haak': {
+      const voor = RM.klaar ? [] : RM.tok.slice(0, RM.cur);
+      const open = voor.filter(x => /\($/.test(x)).length - voor.filter(x => x === ')').length;
+      const laatste = voor[voor.length - 1];
+      const naGetal = laatste != null && (/^[0-9,]$/.test(laatste) || [')', 'π', 'Ans', '²', '⁻¹'].includes(laatste));
+      rmInvoegen(open > 0 && naGetal ? ')' : '('); break;
+    }
+    case 'fd': if (RM.uit != null) RM.toonBreuk = !RM.toonBreuk; break;
+    case '=': rmBereken(); break;
+    default: rmInvoegen(t);
+  }
+  rmTeken();
+}
+function rmParse(tokens){
+  // maak er een lijst van eenheden van: getallen samenvoegen
+  const L = []; let num = '';
+  const flush = () => { if (num){ if (!/^\d*,?\d+$|^\d+,$/.test(num)) throw new Error('Syntax'); L.push({t: 'n', v: parseFloat(num.replace(',', '.'))}); num = ''; } };
+  tokens.forEach(t => { if (/^[0-9,]$/.test(t)) num += t; else { flush(); L.push({t}); } });
+  flush();
+  let p = 0; const pk = () => L[p], neem = () => L[p++];
+  const isStart = x => x && (x.t === 'n' || x.t === 'π' || x.t === 'Ans' || x.t === '(' || /\($/.test(x.t) && x.t !== '^(' && x.t !== '×10^(' || x.t === 'neg');
+  function expr(){ let v = term(); while (pk() && (pk().t === '+' || pk().t === '−')){ const o = neem().t; const r = term(); v = o === '+' ? v + r : v - r; } return v; }
+  function term(){ let v = unair();
+    for (;;){ const x = pk(); if (!x) break;
+      if (x.t === '×' || x.t === '÷'){ p++; const r = unair(); if (x.t === '÷' && r === 0) throw new Error('Wiskundefout'); v = x.t === '×' ? v * r : v / r; }
+      else if (x.t === '×10^('){ p++; const e = expr(); sluit(); v = v * Math.pow(10, e); }
+      else if (isStart(x) && x.t !== 'neg'){ v = v * unair(); }   // impliciet keer, bv. 2π of 3(4)
+      else break; }
+    return v; }
+  function unair(){ if (pk() && (pk().t === 'neg' || pk().t === '−')){ p++; return -unair(); } if (pk() && pk().t === '+'){ p++; return unair(); } return breuk(); }
+  function breuk(){ let v = macht(); while (pk() && pk().t === '⁄'){ p++; const r = macht(); if (r === 0) throw new Error('Wiskundefout'); v = v / r; } return v; }
+  function macht(){ let v = post(); if (pk() && pk().t === '^('){ p++; const e = expr(); sluit(); v = Math.pow(v, e); if (isNaN(v)) throw new Error('Wiskundefout'); } return v; }
+  function post(){ let v = prim(); while (pk() && (pk().t === '²' || pk().t === '⁻¹')){ const o = neem().t; if (o === '²') v = v * v; else { if (v === 0) throw new Error('Wiskundefout'); v = 1 / v; } } return v; }
+  function sluit(){ if (pk() && pk().t === ')') p++; /* een vergeten sluithaakje aan het eind mag */ else if (pk()) throw new Error('Syntax'); }
+  const RAD = Math.PI / 180;
+  function prim(){ const x = neem(); if (!x) throw new Error('Syntax');
+    if (x.t === 'n') return x.v;
+    if (x.t === 'π') return Math.PI;
+    if (x.t === 'Ans') return RM.ans;
+    if (x.t === '('){ const v = expr(); sluit(); return v; }
+    if (x.t === '√('){ const v = expr(); sluit(); if (v < 0) throw new Error('Wiskundefout'); return Math.sqrt(v); }
+    const f = {'sin(': v => Math.sin(v * RAD), 'cos(': v => Math.cos(v * RAD), 'tan(': v => Math.tan(v * RAD), 'asin(': v => Math.asin(v) / RAD, 'acos(': v => Math.acos(v) / RAD, 'atan(': v => Math.atan(v) / RAD}[x.t];
+    if (f){ const v = f(expr()); sluit(); if (isNaN(v)) throw new Error('Wiskundefout'); return Math.abs(v) < 1e-12 ? 0 : v; }
+    throw new Error('Syntax'); }
+  if (!L.length) throw new Error('leeg');
+  const v = expr(); if (p !== L.length) throw new Error('Syntax'); return v;
+}
+function rmBereken(){
+  if (!RM.tok.length) return;
+  try { const v = rmParse(RM.tok); if (!isFinite(v)) throw new Error('Wiskundefout'); RM.ans = Math.round(v * 1e12) / 1e12; RM.uit = RM.ans; RM.toonBreuk = true; RM.klaar = true; RM.oud = false; }
+  catch (e) { RM.fout = e.message === 'Wiskundefout' ? 'Wiskundefout' : 'Syntaxfout'; RM.uit = null; }
+}
+function rmBreuk(v){ // geeft [teller, noemer] als v een nette breuk is
+  if (Number.isInteger(v)) return null;
+  let h1 = 1, h0 = 0, k1 = 0, k0 = 1, x = Math.abs(v);
+  for (let i = 0; i < 20; i++){ const a = Math.floor(x); [h1, h0] = [a * h1 + h0, h1]; [k1, k0] = [a * k1 + k0, k1];
+    if (Math.abs(Math.abs(v) - h1 / k1) < 1e-10) return k1 <= 9999 ? [Math.sign(v) * h1, k1] : null; x = 1 / (x - a); if (!isFinite(x)) break; }
+  return null;
+}
+function rmGetal(v){ let s = String(+v.toPrecision(10)); if (s.includes('e')) s = v.toExponential(6); return s.replace('.', ',').replace(/^-/, '−').replace('e', '×10^'); }
+function rmTeken(){
+  const lin = RM.modus === 'lin';
+  $('#rmIndInv').textContent = RM.inv ? 'INV' : ''; $('#rmIndModus').textContent = lin ? 'Lin' : 'Math';
+  $('#rmInv').classList.toggle('aan', RM.inv);
+  const delen = rmDelen(RM.tok);
+  const fmtIn = t => lin ? esc(t) : esc(t).replace(/²/g, '<sup>2</sup>').replace(/⁻¹/g, '<sup>−1</sup>');
+  const caret = RM.klaar ? '' : '<span class="caret"></span>';
+  $('#rmIn').innerHTML = delen.map((d, i) => (i === RM.cur ? caret : '') + `<span class="tk" data-i="${i}">${fmtIn(d)}</span>`).join('') + (RM.cur >= delen.length ? caret : '');
+  const c = $('#rmIn .caret'); const rin = $('#rmIn'); if (c) rin.scrollLeft = Math.max(0, c.offsetLeft - rin.clientWidth + 30); else rin.scrollLeft = 0;
+  $('#rmUit').classList.toggle('oud', !!RM.oud);
+  const el = $('#rmUit');
+  if (RM.fout){ el.textContent = RM.fout; return; }
+  if (RM.uit == null){ el.textContent = ''; return; }
+  const b = RM.toonBreuk ? rmBreuk(RM.uit) : null;
+  if (b){ const neg = b[0] < 0 ? '−' : '';
+    el.innerHTML = lin ? `${neg}${Math.abs(b[0])}⌟${b[1]}` : `${neg}<span class="breuk"><span>${Math.abs(b[0])}</span><span>${b[1]}</span></span>`; }
+  else el.textContent = rmGetal(RM.uit);
+}
+function rmToggle(open){
+  const rm = $('#rm'); const aan = open == null ? rm.hidden : open; rm.hidden = !aan;
+  const b = $('#rmOpen'); if (b) b.setAttribute('aria-pressed', aan);
+  if (aan){
+    const it = ITEMS[S.huidig]; if (it && !it.theorie){ const s = st(it.id); s.rekenmachine = (s.rekenmachine || 0) + 1; bewaar(); }
+    rmTeken(); $('#rmLcd').focus({preventScroll: true});
+  }
+}
+let rmDoel = null;   // het laatst gekozen antwoordvak
+document.addEventListener('focusin', e => { const t = e.target; if (t.matches && t.matches('input') && t.closest('#main') && !t.disabled) rmDoel = t; });
+function rmKopieer(){
+  const m = $('#rmMelding');
+  if (!RM.klaar || RM.uit == null){ m.textContent = 'Maak eerst een berekening en druk op =.'; return; }
+  const som = rmTekst(RM.tok).replace(/\s+/g, ' ').trim();
+  const b = RM.toonBreuk ? rmBreuk(RM.uit) : null;
+  const antw = b ? `${b[0] < 0 ? '−' : ''}${Math.abs(b[0])}/${b[1]}` : rmGetal(RM.uit);
+  const regel = `${som} = ${antw}`;
+  // in het antwoordvak zetten
+  const doel = rmDoel && document.body.contains(rmDoel) && !rmDoel.disabled ? rmDoel : document.querySelector('#invoer input:not([disabled])');
+  if (doel){ doel.value = antw; doel.dispatchEvent(new Event('input', {bubbles: true})); doel.classList.remove('goed', 'fout'); doel.focus({preventScroll: true}); }
+  // berekening bewaren bij de vraag, zoals op het examen
+  const it = ITEMS[S.huidig];
+  if (it && !it.theorie){ const st2 = st(it.id); st2.berekeningen = (st2.berekeningen || []).concat(regel).slice(-12); bewaar(); toonBerekeningen(it); }
+  try { navigator.clipboard && navigator.clipboard.writeText(regel).catch(() => {}); } catch (e) {}
+  m.textContent = doel ? `Gekopieerd: ${regel}` : `Gekopieerd: ${regel} (klik eerst in een antwoordvak)`;
+}
+function toonBerekeningen(it){
+  const vak = document.getElementById('berekeningen'); if (!vak) return;
+  const lijst = (S.items[it.id] && S.items[it.id].berekeningen) || [];
+  vak.innerHTML = lijst.length ? '<span style="font-size:13px;color:var(--zacht);width:100%">Jouw berekeningen:</span>' + lijst.map(r => `<span class="berekening">${esc(r)}</span>`).join('') : '';
+}
+$('#rmIn').addEventListener('click', e => {
+  const tk = e.target.closest('.tk'); let pos = RM.tok.length;
+  if (tk){ const r = tk.getBoundingClientRect(); pos = +tk.dataset.i + (e.clientX > r.left + r.width / 2 ? 1 : 0); }
+  if (RM.klaar) rmBewerk(pos); else RM.cur = pos;
+  $('#rmMelding').textContent = ''; rmTeken();
+});
+$('#rmToetsen').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.t === 'kopieer') return rmKopieer(); $('#rmMelding').textContent = ''; rmToets(b.dataset.t); });
+document.querySelectorAll('input[name="rmModus"]').forEach(r => r.onchange = () => { RM.modus = r.value; rmTeken(); });
+$('#rmSluit').onclick = () => rmToggle(false);
+$('#rmKlap').onclick = () => { const rm = $('#rm'); const dicht = rm.classList.toggle('ingeklapt'); $('#rmKlap').textContent = dicht ? '▲' : '▼'; $('#rmKlap').setAttribute('aria-expanded', !dicht); };
+$('#rm').addEventListener('keydown', e => {
+  if (e.target.matches('input')) return;
+  const map = {'*': '×', 'x': '×', '/': '÷', ':': '÷', '-': '−', '.': ',', ',': ',', '+': '+', 'Enter': '=', '=': '=', 'Backspace': 'DEL', 'Delete': 'C', 'Escape': 'C', 'ArrowLeft': 'links', 'ArrowRight': 'rechts', '(': 'haak', ')': 'haak', '^': 'macht'};
+  const t = /^[0-9]$/.test(e.key) ? e.key : map[e.key];
+  if (t){ e.preventDefault(); rmToets(t); }
+});
+// slepen: aan de titelbalk of de grijze behuizing
+(() => { const rm = $('#rm'); let dx, dy, sleep = false, id = null;
+  rm.addEventListener('pointerdown', e => {
+    if (e.target.closest('button, input, label, .rm-lcd')) return;
+    sleep = true; id = e.pointerId; const r = rm.getBoundingClientRect(); dx = e.clientX - r.left; dy = e.clientY - r.top;
+    rm.setPointerCapture(id); e.preventDefault(); });
+  rm.addEventListener('pointermove', e => { if (!sleep || e.pointerId !== id) return;
+    const x = Math.min(Math.max(0, e.clientX - dx), innerWidth - Math.min(rm.offsetWidth, innerWidth)), y = Math.min(Math.max(0, e.clientY - dy), innerHeight - 50);
+    rm.style.left = x + 'px'; rm.style.top = y + 'px'; rm.style.right = 'auto'; rm.style.bottom = 'auto'; });
+  const stop = () => { sleep = false; id = null; };
+  rm.addEventListener('pointerup', stop); rm.addEventListener('pointercancel', stop);
+})();
+rmTeken();
+
+/* =========================================================
+   VOORLEZEN (spraak van de browser)
+   ========================================================= */
+const SPRAAK = 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+let leesTempo = 1; try { leesTempo = +localStorage.getItem('leesTempo') || 1; } catch (e) {}
+let stem = null, leesRij = [], leesId = 0;
+function kiesStem(){
+  if (!SPRAAK) return;
+  const v = speechSynthesis.getVoices().filter(x => /^nl/i.test(x.lang));
+  const score = x => (/nl-BE/i.test(x.lang) ? 4 : 0) + (/arnaud|online|natural|neural/i.test(x.name) ? 2 : 0) + (/google|microsoft/i.test(x.name) ? 1 : 0);
+  stem = v.sort((a, b) => score(b) - score(a))[0] || null;
+}
+if (SPRAAK){ kiesStem(); speechSynthesis.onvoiceschanged = kiesStem; }
+function leesKnoppen(){
+  if (!SPRAAK) return '';
+  return `<div class="lees-balk"><button class="lees" id="leesKnop" aria-label="Lees de opdracht voor">🔊 Lees voor</button>
+    <button class="tempo" id="tempoKnop" aria-label="Voorleessnelheid">${leesTempo < 1 ? '🐢 Langzaam' : '🐇 Normaal'}</button></div>`;
+}
+function miniLees(){ return SPRAAK ? '<button class="lees-mini" title="Lees voor" aria-label="Lees voor">🔊</button>' : ''; }
+// maak van wiskunde-tekst iets wat goed klinkt
+function uitspraak(t){
+  return String(t)
+    .replace(/🔊|🐢|🐇|💡|⧉/g, '')
+    .replace(/❶/g, ' 1 ').replace(/❷/g, ' 2 ').replace(/❸/g, ' 3 ').replace(/•/g, '')
+    .replace(/€\s*([0-9]+(?:,[0-9]+)?)(?:,-)?/g, '$1 euro')
+    .replace(/(\d+),-/g, '$1 euro')
+    .replace(/([0-9])([a-z])\b/g, '$1 $2')            // 6k -> 6 k
+    .replace(/([0-9])\(/g, '$1 keer (')                 // 4(k − 7) -> 4 keer (
+    .replace(/×/g, ' keer ').replace(/÷/g, ' gedeeld door ')
+    .replace(/(^|[\s(=+×:])[−-]\s?(?=\d|[a-z]\b)/g, '$1 min ')   // negatief getal
+    .replace(/\s[−-]\s/g, ' min ')
+    .replace(/\+/g, ' plus ').replace(/=/g, ' is ')
+    .replace(/\(/g, ' haakje ').replace(/\)/g, ' haakje ')
+    .replace(/²/g, ' kwadraat').replace(/…/g, ' puntje puntje ')
+    .replace(/\s+/g, ' ').trim();
+}
+function stopLezen(){ leesId++; if (SPRAAK) speechSynthesis.cancel(); document.querySelectorAll('.leest').forEach(e => e.classList.remove('leest')); const k = document.getElementById('leesKnop'); if (k){ k.classList.remove('bezig'); k.textContent = '🔊 Lees voor'; } }
+function leesDelen(delen){   // delen: [{el, tekst}]
+  if (!SPRAAK) return;
+  stopLezen(); const mijn = ++leesId;
+  const k = document.getElementById('leesKnop'); if (k){ k.classList.add('bezig'); k.textContent = '⏹ Stop'; }
+  let i = 0;
+  const volgende = () => {
+    if (mijn !== leesId) return;
+    document.querySelectorAll('.leest').forEach(e => e.classList.remove('leest'));
+    if (i >= delen.length){ stopLezen(); return; }
+    const d = delen[i++]; const tekst = uitspraak(d.tekst);
+    if (!tekst) return volgende();
+    if (d.el) d.el.classList.add('leest');
+    const u = new SpeechSynthesisUtterance(tekst);
+    u.lang = stem ? stem.lang : 'nl-NL'; if (stem) u.voice = stem; u.rate = leesTempo;
+    u.onend = () => setTimeout(volgende, 250); u.onerror = () => { if (mijn === leesId) stopLezen(); };
+    speechSynthesis.speak(u);
+  };
+  volgende();
+}
+// zinnen uit een stuk pagina verzamelen
+function zinDelen(root){
+  const out = [];
+  root.querySelectorAll('.zin, .formulelijst > div, table.wt, .optie').forEach(el => {
+    if (el.matches('table.wt')){
+      const rijen = [...el.rows].map(r => [...r.cells].map(c => c.querySelector('input') ? (c.querySelector('input').value || 'leeg vakje') : c.innerText.trim()));
+      out.push({el, tekst: 'Tabel. ' + rijen.map(r => r[0] + ': ' + r.slice(1).join(', ')).join('. ')});
+    } else if (el.matches('.optie')){
+      out.push({el, tekst: 'Keuze ' + (+el.dataset.k + 1) + '. ' + el.innerText});
+    } else out.push({el, tekst: el.innerText});
+  });
+  return out;
+}
+document.addEventListener('click', e => {
+  const t = e.target;
+  if (t.closest('#leesKnop')){
+    if (t.closest('#leesKnop').classList.contains('bezig')) return stopLezen();
+    const rechts = document.querySelector('.rechts');
+    const delen = [];
+    const theorie = rechts && rechts.querySelector('.theorie-tekst');
+    if (theorie) theorie.querySelectorAll('.zin').forEach(el => delen.push({el, tekst: el.innerText}));
+    else if (rechts){
+      const nr = rechts.querySelector('.opdr-nr'); if (nr) delen.push({el: null, tekst: 'Opdracht ' + nr.innerText.replace(/\s+/g, ' ')});
+      rechts.querySelectorAll('.blok').forEach(b => delen.push(...zinDelen(b)));
+      const opties = rechts.querySelector('.opties'); if (opties) delen.push(...zinDelen(opties));
+      const tab = rechts.querySelector('#invoer table.wt'); if (tab) delen.push(...zinDelen(tab.parentElement));
+      const st0 = rechts.querySelector('.stap.start'); if (st0) delen.push({el: st0, tekst: st0.innerText});
+    }
+    leesDelen(delen); return;
+  }
+  if (t.closest('#tempoKnop')){ leesTempo = leesTempo < 1 ? 1 : 0.75; try { localStorage.setItem('leesTempo', leesTempo); } catch (e) {} t.closest('#tempoKnop').textContent = leesTempo < 1 ? '🐢 Langzaam' : '🐇 Normaal'; return; }
+  const mini = t.closest('.lees-mini');
+  if (mini){ const blok = mini.parentElement; leesDelen([{el: blok, tekst: blok.innerText}]); }
+});
+
+render();
+</script>
+<script src="pipluis.js"></script>
+<script src="les.js"></script>
+</body>
+</html>
