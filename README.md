@@ -2,8 +2,8 @@
 
 Leergame voor hoofdstuk 4 Procenten, voor 2BB (basis) en 2KB (kader) in één app.
 
-**Voor leerlingen:** https://miekevankemenade.github.io/2bb-2kb-h4-procenten/
-**Docentenpagina:** https://miekevankemenade.github.io/2bb-2kb-h4-procenten/docent.html
+**Voor leerlingen:** https://miekevankemenade.github.io/2BB-2KB-H4-procenten/
+**Docentenpagina:** https://miekevankemenade.github.io/2BB-2KB-H4-procenten/docent.html
 
 ## Hoe werkt het?
 
